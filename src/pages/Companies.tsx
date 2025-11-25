@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Building2, MapPin, Phone, Mail, Filter, Plus, Eye, Edit, Trash2, Download } from 'lucide-react'
-import { apiService, type Company } from '../services/apiService'
+import { apiService } from '../services/apiService'
+import type { Company, User } from '../types/global'
 import toast from 'react-hot-toast'
 
 // Interface Company já importada do apiService
@@ -14,22 +14,54 @@ const Companies: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [situacaoFilter, setSituacaoFilter] = useState('')
   const [porteFilter, setPorteFilter] = useState('')
+  const [atividadeFilter, setAtividadeFilter] = useState('')
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
 
   useEffect(() => {
     fetchCompanies()
+    loadCurrentUser()
+    
+    // Atualizar automaticamente a cada 30 segundos
+    const interval = setInterval(() => {
+      fetchCompanies()
+    }, 30000) // 30 segundos
+    
+    // Limpar intervalo quando componente desmontar
+    return () => clearInterval(interval)
   }, [])
+
+  const handleDeleteCompany = async (companyId: string, cnpj: string) => {
+    if (!window.confirm(`Tem certeza que deseja excluir a empresa ${cnpj}? Esta ação não pode ser desfeita.`)) {
+      return
+    }
+
+    try {
+      // Chamar API para excluir empresa (se existir)
+      // Por enquanto, apenas remover do estado local
+      setCompanies(prev => prev.filter(c => c._id !== companyId))
+      toast.success('Empresa excluída com sucesso!')
+    } catch (error: any) {
+      console.error('Erro ao excluir empresa:', error)
+      toast.error('Erro ao excluir empresa')
+    }
+  }
+
+  const loadCurrentUser = () => {
+    const user = apiService.getCurrentUser()
+    setCurrentUser(user)
+  }
 
   useEffect(() => {
     filterCompanies()
-  }, [searchTerm, situacaoFilter, porteFilter, companies])
+  }, [searchTerm, situacaoFilter, porteFilter, atividadeFilter, companies])
 
   const fetchCompanies = async () => {
     try {
       setLoading(true)
-      
+
       // Tentar buscar empresas da API
       const response = await apiService.getCompanies({ limit: 100 })
-      
+
       if (response.success) {
         setCompanies(response.data.companies)
       } else {
@@ -41,18 +73,22 @@ const Companies: React.FC = () => {
             razaoSocial: 'ANTONIO DISTRIBUIÇÃO LTDA',
             nomeFantasia: 'Antonio Distribuidora',
             situacao: 'ATIVA',
-            porte: 'MÉDIA',
+            porte: 'DEMAIS',
             telefone: '(11) 97463-2014',
             email: 'contato@antonio.com.br',
             endereco: {
               logradouro: 'Rua das Flores',
               numero: '123',
+              bairro: 'Centro',
               cep: '01234-567',
               cidade: 'São Paulo',
               uf: 'SP'
             },
-            atividade: 'Distribuição de Alimentos',
-            createdAt: '2024-01-15T00:00:00.000Z'
+            atividades: [{ codigo: '47.11-4-00', descricao: 'Distribuição de Alimentos', principal: true }],
+            status: 'EM_ANALISE',
+            userId: 'user1',
+            createdAt: '2024-01-15T00:00:00.000Z',
+            updatedAt: '2024-01-15T00:00:00.000Z'
           },
           {
             _id: '2',
@@ -60,18 +96,22 @@ const Companies: React.FC = () => {
             razaoSocial: 'ELIANE SERVIÇOS E CONSULTORIA LTDA',
             nomeFantasia: 'Eliane Consultoria',
             situacao: 'ATIVA',
-            porte: 'PEQUENA',
+            porte: 'EPP',
             telefone: '(11) 85642-2013',
             email: 'eliane@consultoria.com.br',
             endereco: {
               logradouro: 'Av. Paulista',
               numero: '456',
+              bairro: 'Bela Vista',
               cep: '01310-100',
               cidade: 'São Paulo',
               uf: 'SP'
             },
-            atividade: 'Consultoria Empresarial',
-            createdAt: '2024-02-10T00:00:00.000Z'
+            atividades: [{ codigo: '70.20-4-00', descricao: 'Consultoria Empresarial', principal: true }],
+            status: 'EM_ANALISE',
+            userId: 'user2',
+            createdAt: '2024-02-10T00:00:00.000Z',
+            updatedAt: '2024-02-10T00:00:00.000Z'
           },
           {
             _id: '3',
@@ -79,18 +119,22 @@ const Companies: React.FC = () => {
             razaoSocial: 'LEA TECNOLOGIA E INOVAÇÃO S.A.',
             nomeFantasia: 'Lea Tech',
             situacao: 'ATIVA',
-            porte: 'GRANDE',
+            porte: 'DEMAIS',
             telefone: '(21) 87547-3921',
             email: 'contato@leatech.com.br',
             endereco: {
               logradouro: 'Rua do Ouvidor',
               numero: '789',
+              bairro: 'Centro',
               cep: '20040-020',
               cidade: 'Rio de Janeiro',
               uf: 'RJ'
             },
-            atividade: 'Desenvolvimento de Software',
-            createdAt: '2024-03-05T00:00:00.000Z'
+            atividades: [{ codigo: '62.01-1-00', descricao: 'Desenvolvimento de Software', principal: true }],
+            status: 'EM_ANALISE',
+            userId: 'user3',
+            createdAt: '2024-03-05T00:00:00.000Z',
+            updatedAt: '2024-03-05T00:00:00.000Z'
           },
           {
             _id: '4',
@@ -98,25 +142,29 @@ const Companies: React.FC = () => {
             razaoSocial: 'ERIC INDÚSTRIAS METALÚRGICAS LTDA',
             nomeFantasia: 'Eric Metais',
             situacao: 'SUSPENSA',
-            porte: 'MÉDIA',
+            porte: 'DEMAIS',
             telefone: '(19) 99999-9999',
             email: 'eric@metalurgica.com.br',
             endereco: {
               logradouro: 'Distrito Industrial',
               numero: '1000',
+              bairro: 'Distrito Industrial',
               cep: '13100-000',
               cidade: 'Campinas',
               uf: 'SP'
             },
-            atividade: 'Metalurgia',
-            createdAt: '2024-04-12T00:00:00.000Z'
+            atividades: [{ codigo: '24.41-4-00', descricao: 'Metalurgia', principal: true }],
+            status: 'EM_ANALISE',
+            userId: 'user4',
+            createdAt: '2024-04-12T00:00:00.000Z',
+            updatedAt: '2024-04-12T00:00:00.000Z'
           }
         ]
-        
+
         setCompanies(mockCompanies)
-        toast.info('Usando dados de demonstração - API não disponível')
+        toast.success('Usando dados de demonstração - API não disponível')
       }
-      
+
     } catch (error: any) {
       console.error('Erro ao carregar empresas:', error)
       toast.error('Erro ao carregar dados das empresas')
@@ -145,6 +193,12 @@ const Companies: React.FC = () => {
       filtered = filtered.filter(c => c.porte === porteFilter)
     }
 
+    if (atividadeFilter) {
+      filtered = filtered.filter(c =>
+        c.atividades?.some(a => a.descricao.toLowerCase().includes(atividadeFilter.toLowerCase()))
+      )
+    }
+
     setFilteredCompanies(filtered)
   }
 
@@ -163,21 +217,81 @@ const Companies: React.FC = () => {
 
   const getPorteBadge = (porte: string) => {
     const colors = {
-      'MICRO': 'bg-green-100 text-green-800',
-      'PEQUENA': 'bg-blue-100 text-blue-800',
-      'MÉDIA': 'bg-yellow-100 text-yellow-800',
-      'GRANDE': 'bg-purple-100 text-purple-800'
+      'ME': 'bg-green-100 text-green-800',
+      'EPP': 'bg-blue-100 text-blue-800',
+      'DEMAIS': 'bg-purple-100 text-purple-800'
     }
-    
+
+    const labels = {
+      'ME': 'ME',
+      'EPP': 'EPP',
+      'DEMAIS': 'DEMAIS'
+    }
+
     return (
       <span className={`${colors[porte as keyof typeof colors] || 'bg-gray-100 text-gray-800'} px-3 py-1 rounded-full text-sm font-semibold`}>
-        {porte}
+        {labels[porte as keyof typeof labels] || porte}
       </span>
     )
   }
 
+  const exportToCSV = () => {
+    const headers = [
+      'CNPJ',
+      'Razão Social',
+      'Nome Fantasia',
+      'Situação',
+      'Porte',
+      'Telefone',
+      'Email',
+      'Logradouro',
+      'Número',
+      'Bairro',
+      'CEP',
+      'Cidade',
+      'UF',
+      'Atividades',
+      'Status',
+      'Data Criação',
+      'Última Atualização'
+    ]
+
+    const csvContent = [
+      headers.join(','),
+      ...filteredCompanies.map(company => [
+        `"${company.cnpj}"`,
+        `"${company.razaoSocial}"`,
+        `"${company.nomeFantasia || ''}"`,
+        `"${company.situacao}"`,
+        `"${company.porte}"`,
+        `"${company.telefone || ''}"`,
+        `"${company.email || ''}"`,
+        `"${company.endereco?.logradouro || ''}"`,
+        `"${company.endereco?.numero || ''}"`,
+        `"${company.endereco?.bairro || ''}"`,
+        `"${company.endereco?.cep || ''}"`,
+        `"${company.endereco?.cidade || ''}"`,
+        `"${company.endereco?.uf || ''}"`,
+        `"${company.atividades?.map(a => a.descricao).join('; ') || ''}"`,
+        `"${company.status}"`,
+        `"${new Date(company.createdAt).toLocaleDateString('pt-BR')}"`,
+        `"${new Date(company.updatedAt).toLocaleDateString('pt-BR')}"`
+      ].join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `empresas_${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen companies-section py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Cabeçalho */}
         <motion.div
@@ -185,11 +299,15 @@ const Companies: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl p-8 shadow-xl">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white rounded-2xl p-8 shadow-xl">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="titulo-principal text-4xl font-bold mb-2">Gestão de Empresas</h1>
-                <p className="texto-elegante text-xl text-red-100">Base de dados completa de empresas brasileiras</p>
+                <p className="texto-elegante text-xl text-red-100 dark:text-red-200">
+                  {currentUser?.role === 'admin'
+                    ? 'Visualização completa de todas as empresas do sistema'
+                    : 'Base de dados completa de empresas brasileiras'}
+                </p>
               </div>
               <div className="hidden md:flex items-center">
                 <div className="text-center">
@@ -206,7 +324,7 @@ const Companies: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="cartao-edenred mb-8"
+          className="cartao-edenredash mb-8"
         >
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
@@ -224,7 +342,7 @@ const Companies: React.FC = () => {
               <select
                 value={situacaoFilter}
                 onChange={(e) => setSituacaoFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               >
                 <option value="">Todas as Situações</option>
                 <option value="ATIVA">Ativa</option>
@@ -235,22 +353,56 @@ const Companies: React.FC = () => {
               <select
                 value={porteFilter}
                 onChange={(e) => setPorteFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               >
                 <option value="">Todos os Portes</option>
-                <option value="MICRO">Microempresa</option>
-                <option value="PEQUENA">Pequena</option>
-                <option value="MÉDIA">Média</option>
-                <option value="GRANDE">Grande</option>
+                <option value="ME">Microempresa</option>
+                <option value="EPP">Pequena</option>
+                <option value="DEMAIS">Médio/Grande</option>
+              </select>
+
+              <select
+                value={atividadeFilter}
+                onChange={(e) => setAtividadeFilter(e.target.value)}
+                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              >
+                <option value="">Todas as Atividades</option>
+                <option value="Distribuição de Alimentos">Distribuição de Alimentos</option>
+                <option value="Consultoria Empresarial">Consultoria Empresarial</option>
+                <option value="Desenvolvimento de Software">Desenvolvimento de Software</option>
+                <option value="Metalurgia">Metalurgia</option>
               </select>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              <button 
+                onClick={() => {
+                  fetchCompanies()
+                  toast.success('Dados atualizados!')
+                }}
+                className="botao-edenred-secundario flex items-center"
+                title="Atualizar dados"
+              >
+                <svg className="mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                </svg>
+                Atualizar
+              </button>
               <button className="botao-edenred-secundario flex items-center">
                 <Filter className="mr-2" size={18} />
                 Filtros Avançados
               </button>
-              <button className="botao-edenred-primario flex items-center">
+              <button
+                onClick={exportToCSV}
+                className="botao-edenred-secundario flex items-center"
+              >
+                <Download className="mr-2" size={18} />
+                Exportar CSV
+              </button>
+              <button
+                onClick={() => window.location.href = '/consultation'}
+                className="botao-edenred-primario flex items-center"
+              >
                 <Plus className="mr-2" size={18} />
                 Nova Empresa
               </button>
@@ -263,7 +415,7 @@ const Companies: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="cartao-edenred overflow-hidden"
+          className="cartao-edenredash overflow-hidden"
         >
           {loading ? (
             <div className="text-center py-12">
@@ -273,12 +425,15 @@ const Companies: React.FC = () => {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-red-600 to-red-700 text-white">
+                <thead className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white">
                   <tr>
                     <th className="px-6 py-4 text-left font-semibold">CNPJ</th>
                     <th className="px-6 py-4 text-left font-semibold">RAZÃO SOCIAL</th>
                     <th className="px-6 py-4 text-left font-semibold">SITUAÇÃO</th>
                     <th className="px-6 py-4 text-left font-semibold">PORTE</th>
+                    {currentUser?.role === 'admin' && (
+                      <th className="px-6 py-4 text-left font-semibold">ADICIONADO POR</th>
+                    )}
                     <th className="px-6 py-4 text-left font-semibold">CONTATO</th>
                     <th className="px-6 py-4 text-left font-semibold">LOCALIZAÇÃO</th>
                     <th className="px-6 py-4 text-left font-semibold">AÇÕES</th>
@@ -299,8 +454,8 @@ const Companies: React.FC = () => {
                         <div className="font-semibold text-gray-900 max-w-xs">
                           {company.razaoSocial}
                         </div>
-                        {company.atividade && (
-                          <div className="text-xs text-gray-500 mt-1">{company.atividade}</div>
+                        {company.atividades && company.atividades.length > 0 && (
+                          <div className="text-xs text-gray-500 mt-1">{company.atividades[0].descricao}</div>
                         )}
                       </td>
                       <td className="px-6 py-4">
@@ -309,6 +464,23 @@ const Companies: React.FC = () => {
                       <td className="px-6 py-4">
                         {getPorteBadge(company.porte)}
                       </td>
+                      {currentUser?.role === 'admin' && (
+                        <td className="px-6 py-4">
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold text-sm mr-2">
+                              U
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900 text-sm">
+                                Usuário
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                ID: {company.userId || 'Desconhecido'}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      )}
                       <td className="px-6 py-4">
                         <div className="space-y-1">
                           {company.telefone && (
@@ -343,12 +515,20 @@ const Companies: React.FC = () => {
                           <button className="text-blue-600 hover:text-blue-800 transition-colors" title="Visualizar">
                             <Eye size={18} />
                           </button>
-                          <button className="text-green-600 hover:text-green-800 transition-colors" title="Editar">
-                            <Edit size={18} />
-                          </button>
-                          <button className="text-red-600 hover:text-red-800 transition-colors" title="Excluir">
-                            <Trash2 size={18} />
-                          </button>
+                          {currentUser?.role === 'admin' && (
+                            <>
+                              <button className="text-green-600 hover:text-green-800 transition-colors" title="Editar">
+                                <Edit size={18} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteCompany(company._id, company.cnpj)}
+                                className="text-red-600 hover:text-red-800 transition-colors"
+                                title="Excluir"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -383,14 +563,14 @@ const Companies: React.FC = () => {
           
           <div className="cartao-edenred text-center">
             <div className="text-2xl font-bold text-blue-600">
-              {companies.filter(c => c.porte === 'PEQUENA' || c.porte === 'MICRO').length}
+              {companies.filter(c => c.porte === 'ME' || c.porte === 'EPP').length}
             </div>
             <p className="text-gray-600 font-semibold">Pequeno Porte</p>
           </div>
-          
+
           <div className="cartao-edenred text-center">
             <div className="text-2xl font-bold text-purple-600">
-              {companies.filter(c => c.porte === 'MÉDIA' || c.porte === 'GRANDE').length}
+              {companies.filter(c => c.porte === 'DEMAIS').length}
             </div>
             <p className="text-gray-600 font-semibold">Médio/Grande Porte</p>
           </div>

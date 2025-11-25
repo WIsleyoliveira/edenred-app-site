@@ -1,5 +1,5 @@
 import express from 'express';
-import Company from '../models/Company.js';
+import { obterAdaptadorBanco } from '../config/dbAdapter.js';
 import { authenticate } from '../middleware/auth.js';
 import { validatePagination, validateSearch } from '../middleware/validation.js';
 
@@ -10,40 +10,30 @@ router.use(authenticate);
 router.get('/', validatePagination, validateSearch, async (req, res) => {
   try {
     const { page = 1, limit = 10, q, situacao } = req.query;
+
+    const filters = { page: parseInt(page), limit: parseInt(limit) };
+    if (q) filters.search = q;
+    if (situacao) filters.situacao = situacao;
+
+    let result;
     
-    const filter = { addedBy: req.user._id };
-    if (situacao) filter.situacao = situacao;
-    
-    let query = Company.find(filter);
-    
-    if (q) {
-      query = query.or([
-        { razaoSocial: { $regex: q, $options: 'i' } },
-        { nomeFantasia: { $regex: q, $options: 'i' } },
-        { cnpj: { $regex: q, $options: 'i' } }
-      ]);
+    // Admin vê todas as empresas, usuário comum vê apenas as suas
+    if (req.user.role === 'admin') {
+      result = await obterAdaptadorBanco().buscarTodasEmpresas(filters);
+    } else {
+      result = await obterAdaptadorBanco().buscarEmpresasPorUsuario(req.user.id, filters);
     }
-    
-    const companies = await query
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-    
-    const total = await Company.countDocuments(filter);
-    
+
     res.json({
       success: true,
       data: {
-        companies,
-        pagination: {
-          currentPage: parseInt(page),
-          totalPages: Math.ceil(total / limit),
-          total
-        }
+        companies: result.data,
+        pagination: result.pagination
       }
     });
-    
+
   } catch (error) {
+    console.error('Erro ao listar empresas:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor',

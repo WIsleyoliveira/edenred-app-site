@@ -25,7 +25,7 @@ const router = express.Router();
  * @desc    Registrar novo usuário
  * @access  Public
  */
-router.post('/register', authRateLimit, validateUserRegistration, register);
+router.post('/register', validateUserRegistration, register);
 
 /**
  * @route   POST /api/auth/login

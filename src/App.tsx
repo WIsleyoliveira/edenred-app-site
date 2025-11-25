@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import { apiService } from './services/apiService'
-import toast from 'react-hot-toast'
+import ErrorBoundary from './components/ErrorBoundary'
 import BarraNavegacao from './components/Navbar'
+import Chatbot from './components/Chatbot'
 import Inicio from './pages/Home'
 import Consulta from './pages/Consultation'
 import PainelControle from './pages/Dashboard'
@@ -14,29 +14,9 @@ function App() {
   const [estaAutenticado, setEstaAutenticado] = useState(false) // 👈 controle de autenticação do usuário
   const [carregandoAuth, setCarregandoAuth] = useState(true)
 
-  // Verificar autenticação ao iniciar o app
+  // Sempre mostrar tela de login ao iniciar
   useEffect(() => {
-    const verificarAutenticacao = async () => {
-      try {
-        if (apiService.isAuthenticated()) {
-          // Verificar se o token ainda é válido
-          const response = await apiService.verifyToken()
-          if (response.success) {
-            setEstaAutenticado(true)
-          } else {
-            // Token inválido, remover do localStorage
-            await apiService.logout()
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao verificar autenticação:', error)
-        await apiService.logout()
-      } finally {
-        setCarregandoAuth(false)
-      }
-    }
-
-    verificarAutenticacao()
+    setCarregandoAuth(false)
   }, [])
 
   // Mostrar loading enquanto verifica autenticação
@@ -52,7 +32,7 @@ function App() {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -82,9 +62,12 @@ function App() {
               </>
             )}
           </Routes>
+          
+          {/* Chatbot disponível em todas as páginas quando autenticado */}
+          {estaAutenticado && <Chatbot />}
         </div>
       </Router>
-    </>
+    </ErrorBoundary>
   )
 }
 

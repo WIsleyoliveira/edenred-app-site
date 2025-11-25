@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import Company from '../models/Company.js';
-import User from '../models/User.js';
+import UserModel from '../models/User.js';
+import CompanyModel from '../models/Company.js';
 import bcrypt from 'bcryptjs';
 
 // Configurar ambiente
@@ -18,25 +18,17 @@ const companiesData = [
     capitalSocial: 500000,
     naturezaJuridica: 'Sociedade Empresária Limitada',
     dataAbertura: '2010-01-15T00:00:00.000Z',
-    address: {
-      zipCode: '01234-567',
-      street: 'Rua das Flores',
-      number: '123',
-      complement: '',
-      neighborhood: 'Centro',
-      city: 'São Paulo',
-      state: 'SP'
-    },
-    contact: {
-      phone: '(11) 97463-2014',
-      email: 'contato@antonio.com.br'
-    },
-    cnae: {
-      principal: {
-        codigo: '4610-7/01',
-        descricao: 'Distribuição de Alimentos'
-      }
-    },
+    addressStreet: 'Rua das Flores',
+    addressNumber: '123',
+    addressComplement: '',
+    addressNeighborhood: 'Centro',
+    addressCity: 'São Paulo',
+    addressState: 'SP',
+    addressZipCode: '01234-567',
+    contactPhone: '(11) 97463-2014',
+    contactEmail: 'contato@antonio.com.br',
+    cnaePrincipal: '4610-7/01',
+    cnaePrincipalDescricao: 'Distribuição de Alimentos',
     lastUpdated: new Date()
   },
   {
@@ -48,25 +40,17 @@ const companiesData = [
     capitalSocial: 100000,
     naturezaJuridica: 'Sociedade Empresária Limitada',
     dataAbertura: '2015-02-10T00:00:00.000Z',
-    address: {
-      zipCode: '01310-100',
-      street: 'Av. Paulista',
-      number: '456',
-      complement: 'Sala 301',
-      neighborhood: 'Bela Vista',
-      city: 'São Paulo',
-      state: 'SP'
-    },
-    contact: {
-      phone: '(11) 85642-2013',
-      email: 'eliane@consultoria.com.br'
-    },
-    cnae: {
-      principal: {
-        codigo: '7020-4/00',
-        descricao: 'Consultoria Empresarial'
-      }
-    },
+    addressStreet: 'Av. Paulista',
+    addressNumber: '456',
+    addressComplement: 'Sala 301',
+    addressNeighborhood: 'Bela Vista',
+    addressCity: 'São Paulo',
+    addressState: 'SP',
+    addressZipCode: '01310-100',
+    contactPhone: '(11) 85642-2013',
+    contactEmail: 'eliane@consultoria.com.br',
+    cnaePrincipal: '7020-4/00',
+    cnaePrincipalDescricao: 'Consultoria Empresarial',
     lastUpdated: new Date()
   },
   {
@@ -78,25 +62,17 @@ const companiesData = [
     capitalSocial: 2000000,
     naturezaJuridica: 'Sociedade Anônima',
     dataAbertura: '2018-03-05T00:00:00.000Z',
-    address: {
-      zipCode: '20040-020',
-      street: 'Rua do Ouvidor',
-      number: '789',
-      complement: 'Andar 15',
-      neighborhood: 'Centro',
-      city: 'Rio de Janeiro',
-      state: 'RJ'
-    },
-    contact: {
-      phone: '(21) 87547-3921',
-      email: 'contato@leatech.com.br'
-    },
-    cnae: {
-      principal: {
-        codigo: '6201-5/00',
-        descricao: 'Desenvolvimento de Software'
-      }
-    },
+    addressStreet: 'Rua do Ouvidor',
+    addressNumber: '789',
+    addressComplement: 'Andar 15',
+    addressNeighborhood: 'Centro',
+    addressCity: 'Rio de Janeiro',
+    addressState: 'RJ',
+    addressZipCode: '20040-020',
+    contactPhone: '(21) 87547-3921',
+    contactEmail: 'contato@leatech.com.br',
+    cnaePrincipal: '6201-5/00',
+    cnaePrincipalDescricao: 'Desenvolvimento de Software',
     lastUpdated: new Date()
   },
   {
@@ -108,38 +84,51 @@ const companiesData = [
     capitalSocial: 800000,
     naturezaJuridica: 'Sociedade Empresária Limitada',
     dataAbertura: '2012-04-12T00:00:00.000Z',
-    address: {
-      zipCode: '13100-000',
-      street: 'Distrito Industrial',
-      number: '1000',
-      complement: '',
-      neighborhood: 'Industrial',
-      city: 'Campinas',
-      state: 'SP'
-    },
-    contact: {
-      phone: '(19) 99999-9999',
-      email: 'eric@metalurgica.com.br'
-    },
-    cnae: {
-      principal: {
-        codigo: '2511-0/00',
-        descricao: 'Metalurgia'
-      }
-    },
+    addressStreet: 'Distrito Industrial',
+    addressNumber: '1000',
+    addressComplement: '',
+    addressNeighborhood: 'Industrial',
+    addressCity: 'Campinas',
+    addressState: 'SP',
+    addressZipCode: '13100-000',
+    contactPhone: '(19) 99999-9999',
+    contactEmail: 'eric@metalurgica.com.br',
+    cnaePrincipal: '2511-0/00',
+    cnaePrincipalDescricao: 'Metalurgia',
     lastUpdated: new Date()
   }
 ];
 
 const seedDatabase = async () => {
+  let sequelize;
   try {
-    // Conectar ao MongoDB
-    await mongoose.connect(process.env.URL_CONEXAO_MONGODB || 'mongodb://localhost:27017/sistema_consulta_cnpj');
-    console.log('✅ Conectado ao MongoDB para seed');
+    // Conectar ao PostgreSQL
+    sequelize = new Sequelize(
+      process.env.DB_NAME || 'cnpj_consultation',
+      process.env.DB_USER || 'postgres',
+      process.env.DB_PASSWORD || 'password',
+      {
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 5432,
+        dialect: 'postgres',
+        logging: false
+      }
+    );
+
+    await sequelize.authenticate();
+    console.log('✅ Conectado ao PostgreSQL para seed');
+
+    // Inicializar modelos
+    const User = UserModel(sequelize);
+    const Company = CompanyModel(sequelize);
+
+    // Sincronizar modelos
+    await sequelize.sync({ force: false });
+    console.log('✅ Modelos sincronizados');
 
     // Obter o usuário teste para associar às empresas
-    let user = await User.findOne({ email: 'teste@edenred.com' });
-    
+    let user = await User.findOne({ where: { email: 'teste@edenred.com' } });
+
     if (!user) {
       // Criar usuário teste se não existir
       const hashedPassword = await bcrypt.hash('Test123456', 12);
@@ -157,14 +146,14 @@ const seedDatabase = async () => {
     }
 
     // Limpar empresas existentes
-    await Company.deleteMany({});
+    await Company.destroy({ where: {} });
     console.log('🗑️ Empresas existentes removidas');
 
     // Adicionar empresas de exemplo
     for (const companyData of companiesData) {
       await Company.create({
         ...companyData,
-        addedBy: user._id
+        addedBy: user.id
       });
     }
 
@@ -172,7 +161,9 @@ const seedDatabase = async () => {
     console.log('🎉 Seed do banco de dados concluído com sucesso!');
 
     // Listar empresas criadas
-    const companies = await Company.find().select('cnpj razaoSocial situacao');
+    const companies = await Company.findAll({
+      attributes: ['cnpj', 'razaoSocial', 'situacao']
+    });
     console.log('\n📋 Empresas criadas:');
     companies.forEach(company => {
       console.log(`  - ${company.cnpj} | ${company.razaoSocial} | ${company.situacao}`);
@@ -182,8 +173,10 @@ const seedDatabase = async () => {
     console.error('❌ Erro no seed:', error);
   } finally {
     // Desconectar do banco
-    await mongoose.disconnect();
-    console.log('\n✅ Desconectado do MongoDB');
+    if (sequelize) {
+      await sequelize.close();
+      console.log('\n✅ Desconectado do PostgreSQL');
+    }
     process.exit(0);
   }
 };

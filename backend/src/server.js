@@ -15,6 +15,13 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Validar variáveis de ambiente antes de iniciar
+import validateEnvironment from './utils/validateEnv.js';
+if (!validateEnvironment()) {
+  console.error('❌ Falha na validação de variáveis de ambiente. Encerrando aplicação.');
+  process.exit(1);
+}
+
 // Importar configuração do banco
 import { obterAdaptadorBanco } from './config/dbAdapter.js';
 
@@ -28,6 +35,7 @@ import companyRoutes from './routes/companies.js';
 import consultationRoutes from './routes/consultations.js';
 import landscapeRoutes from './routes/landscapes.js';
 import uploadRoutes from './routes/upload.js';
+import chatbotRoutes from './routes/chatbot.js';
 
 const app = express();
 
@@ -38,6 +46,10 @@ const inicializarAplicacao = async () => {
     const adaptador = obterAdaptadorBanco();
     await adaptador.conectar();
     console.log('✅ Banco de dados conectado com sucesso');
+
+    // Inicializar sistema com dados padrão
+    const inicializarSistema = (await import('./utils/initializeSystem.js')).default;
+    await inicializarSistema();
   } catch (error) {
     console.error('Erro ao conectar database:', error);
     process.exit(1);
@@ -130,7 +142,8 @@ app.get('/', (req, res) => {
       companies: '/api/companies',
       consultations: '/api/consultations',
       landscapes: '/api/landscapes',
-      upload: '/api/upload'
+      upload: '/api/upload',
+      chatbot: '/api/chatbot'
     }
   });
 });
@@ -142,6 +155,7 @@ app.use('/api/companies', companyRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/landscapes', landscapeRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 // Middleware para rotas não encontradas
 app.use('*', (req, res) => {

@@ -1,153 +1,200 @@
-import mongoose from 'mongoose';
+// Este arquivo define o modelo Company (Empresa) para o Sequelize.
+// Representa empresas brasileiras consultadas na Receita Federal, armazenando dados como CNPJ, razão social, endereço, etc.
 
-const addressSchema = new mongoose.Schema({
-  street: { type: String, trim: true },
-  number: { type: String, trim: true },
-  complement: { type: String, trim: true },
-  neighborhood: { type: String, trim: true },
-  city: { type: String, trim: true },
-  state: { type: String, trim: true },
-  zipCode: { type: String, trim: true },
-  country: { type: String, default: 'Brasil' }
-}, { _id: false });
+import { DataTypes } from 'sequelize'; // Tipos de dados do Sequelize
 
-const contactSchema = new mongoose.Schema({
-  phone: { type: String, trim: true },
-  email: { type: String, trim: true, lowercase: true },
-  website: { type: String, trim: true }
-}, { _id: false });
-
-const companySchema = new mongoose.Schema({
-  cnpj: {
-    type: String,
-    required: [true, 'CNPJ é obrigatório'],
-    unique: true,
-    trim: true,
-    match: [/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ deve estar no formato XX.XXX.XXX/XXXX-XX']
-  },
-  razaoSocial: {
-    type: String,
-    required: [true, 'Razão social é obrigatória'],
-    trim: true,
-    maxlength: [200, 'Razão social não pode ter mais de 200 caracteres']
-  },
-  nomeFantasia: {
-    type: String,
-    trim: true,
-    maxlength: [200, 'Nome fantasia não pode ter mais de 200 caracteres']
-  },
-  naturezaJuridica: {
-    type: String,
-    trim: true
-  },
-  situacao: {
-    type: String,
-    enum: ['ATIVA', 'BAIXADA', 'SUSPENSA', 'INAPTA'],
-    default: 'ATIVA'
-  },
-  dataAbertura: {
-    type: Date
-  },
-  capitalSocial: {
-    type: Number,
-    min: [0, 'Capital social não pode ser negativo']
-  },
-  cnae: {
-    principal: {
-      codigo: String,
-      descricao: String
+// Função que cria e retorna o modelo Company
+const CompanyModel = (sequelize) => {
+  // Define o modelo Company com todas as colunas da tabela
+  const Company = sequelize.define('Company', {
+    // Chave primária auto-incrementada
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    secundarias: [{
-      codigo: String,
-      descricao: String
-    }]
-  },
-  address: addressSchema,
-  contact: contactSchema,
-  socios: [{
-    nome: { type: String, trim: true },
-    qualificacao: { type: String, trim: true },
-    participacao: { type: Number, min: 0, max: 100 }
-  }],
-  porte: {
-    type: String,
-    enum: ['MEI', 'ME', 'EPP', 'MEDIO', 'GRANDE'],
-    default: 'ME'
-  },
-  regimeTributario: {
-    type: String,
-    enum: ['SIMPLES', 'PRESUMIDO', 'REAL'],
-    default: 'SIMPLES'
-  },
-  lastUpdated: {
-    type: Date,
-    default: Date.now
-  },
-  dataSource: {
-    type: String,
-    enum: ['RECEITA_FEDERAL', 'MANUAL', 'API_EXTERNA'],
-    default: 'RECEITA_FEDERAL'
-  },
-  tags: [{
-    type: String,
-    trim: true,
-    lowercase: true
-  }],
-  notes: {
-    type: String,
-    maxlength: [1000, 'Notas não podem ter mais de 1000 caracteres']
-  },
-  isFavorite: {
-    type: Boolean,
-    default: false
-  },
-  addedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+    // CNPJ da empresa (formato: XX.XXX.XXX/XXXX-XX)
+    cnpj: {
+      type: DataTypes.STRING(18), // Máximo 18 caracteres (com pontos e barras)
+      allowNull: false, // Obrigatório
+      unique: true, // CNPJ deve ser único
+      validate: {
+        notEmpty: { msg: 'CNPJ é obrigatório' },
+        is: { // Validação de formato usando regex
+          args: /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/,
+          msg: 'CNPJ deve estar no formato XX.XXX.XXX/XXXX-XX'
+        }
+      }
+    },
+    // Razão social (nome oficial da empresa)
+    razaoSocial: {
+      type: DataTypes.STRING(200), // Até 200 caracteres
+      allowNull: false, // Obrigatório
+      validate: {
+        notEmpty: { msg: 'Razão social é obrigatória' },
+        len: [1, 200]
+      }
+    },
+    // Nome fantasia (nome comercial)
+    nomeFantasia: {
+      type: DataTypes.STRING(200),
+      allowNull: true // Opcional
+    },
+    // Natureza jurídica (tipo de empresa: LTDA, S.A., etc.)
+    naturezaJuridica: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    // Situação cadastral (ATIVA, BAIXADA, SUSPENSA, INAPTA)
+    situacao: {
+      type: DataTypes.ENUM('ATIVA', 'BAIXADA', 'SUSPENSA', 'INAPTA'),
+      defaultValue: 'ATIVA' // Padrão: ativa
+    },
+    // Data de abertura da empresa
+    dataAbertura: {
+      type: DataTypes.DATE, // Data completa
+      allowNull: true
+    },
+    // Capital social (valor em reais)
+    capitalSocial: {
+      type: DataTypes.DECIMAL(15, 2), // Até 15 dígitos, 2 casas decimais
+      allowNull: true,
+      validate: {
+        min: 0 // Não pode ser negativo
+      }
+    },
+    // Código CNAE principal (Classificação Nacional de Atividades Econômicas)
+    cnaePrincipal: {
+      type: DataTypes.STRING(10), // Código como "6201-5/00"
+      allowNull: true
+    },
+    // Descrição do CNAE principal
+    cnaePrincipalDescricao: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    // Porte da empresa (MEI, ME, EPP, MEDIO, GRANDE)
+    porte: {
+      type: DataTypes.ENUM('MEI', 'ME', 'EPP', 'MEDIO', 'GRANDE'),
+      defaultValue: 'ME' // Padrão: Micro Empresa
+    },
+    // Regime tributário (SIMPLES, PRESUMIDO, REAL)
+    regimeTributario: {
+      type: DataTypes.ENUM('SIMPLES', 'PRESUMIDO', 'REAL'),
+      defaultValue: 'SIMPLES' // Padrão: Simples Nacional
+    },
+    // Endereço - Rua/Logradouro
+    addressStreet: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    // Endereço - Número
+    addressNumber: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
+    // Endereço - Complemento
+    addressComplement: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    // Endereço - Bairro
+    addressNeighborhood: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    // Endereço - Cidade
+    addressCity: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    // Endereço - Estado (UF)
+    addressState: {
+      type: DataTypes.STRING(2), // Sigla: SP, RJ, etc.
+      allowNull: true
+    },
+    // Endereço - CEP
+    addressZipCode: {
+      type: DataTypes.STRING(10), // Formato: 01234-567
+      allowNull: true
+    },
+    // País (padrão Brasil)
+    addressCountry: {
+      type: DataTypes.STRING(50),
+      defaultValue: 'Brasil'
+    },
+    // Telefone de contato
+    contactPhone: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
+    // Email de contato
+    contactEmail: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      validate: {
+        isEmail: true // Validação de formato de email
+      }
+    },
+    // Website da empresa
+    contactWebsite: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    // Última atualização dos dados
+    lastUpdated: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW // Padrão: agora
+    },
+    // Fonte dos dados (RECEITA_FEDERAL, MANUAL, API_EXTERNA)
+    dataSource: {
+      type: DataTypes.ENUM('RECEITA_FEDERAL', 'MANUAL', 'API_EXTERNA'),
+      defaultValue: 'RECEITA_FEDERAL' // Padrão: Receita Federal
+    },
+    // Tags para categorização (array em JSON)
+    tags: {
+      type: DataTypes.JSON, // Array de strings
+      defaultValue: [] // Padrão: array vazio
+    },
+    // Notas/anotações sobre a empresa
+    notes: {
+      type: DataTypes.TEXT, // Tipo TEXT para textos longos
+      allowNull: true,
+      validate: {
+        len: [0, 1000] // Máximo 1000 caracteres
+      }
+    },
+    // Flag para empresa favorita do usuário
+    isFavorite: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false // Padrão: não favorita
+    },
+    // ID do usuário que adicionou a empresa (chave estrangeira)
+    addedBy: {
+      type: DataTypes.INTEGER,
+      allowNull: false, // Obrigatório
+      references: { // Referência para tabela users
+        model: 'users',
+        key: 'id'
+      }
+    }
+  }, {
+    // Configurações da tabela
+    tableName: 'companies', // Nome da tabela no banco
+    timestamps: true, // Adiciona createdAt e updatedAt
+    indexes: [ // Índices para otimizar consultas
+      { unique: true, fields: ['cnpj'] }, // Índice único no CNPJ
+      { fields: ['razaoSocial'] }, // Índice na razão social
+      { fields: ['situacao'] }, // Índice na situação
+      { fields: ['addedBy'] }, // Índice no usuário que adicionou
+      { fields: ['createdAt'] }, // Índice na data de criação
+      // { fields: ['tags'] }, // Removido por problemas de indexação JSON no PostgreSQL
+      { fields: ['cnaePrincipal'] } // Índice no CNAE
+    ]
+  });
 
-// Indexes para melhor performance
-companySchema.index({ cnpj: 1 });
-companySchema.index({ razaoSocial: 'text', nomeFantasia: 'text' });
-companySchema.index({ situacao: 1 });
-companySchema.index({ addedBy: 1 });
-companySchema.index({ createdAt: -1 });
-companySchema.index({ tags: 1 });
-companySchema.index({ 'cnae.principal.codigo': 1 });
-
-// Virtual para formatar CNPJ
-companySchema.virtual('cnpjFormatted').get(function() {
-  return this.cnpj;
-});
-
-// Método para adicionar/remover dos favoritos
-companySchema.methods.toggleFavorite = function() {
-  this.isFavorite = !this.isFavorite;
-  return this.save();
+  // Retorna o modelo Company configurado
+  return Company;
 };
 
-// Middleware para atualizar lastUpdated
-companySchema.pre('save', function(next) {
-  if (this.isModified() && !this.isNew) {
-    this.lastUpdated = new Date();
-  }
-  next();
-});
-
-// Virtual para contagem de consultas
-companySchema.virtual('consultationCount', {
-  ref: 'Consultation',
-  localField: 'cnpj',
-  foreignField: 'cnpj',
-  count: true
-});
-
-const Company = mongoose.model('Company', companySchema);
-
-export default Company;
+export default CompanyModel;

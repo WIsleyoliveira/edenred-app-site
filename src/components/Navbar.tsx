@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Search, BarChart3, Building2, Home, FileText } from 'lucide-react'
+import { Menu, X, Search, BarChart3, Building2, Home, FileText, Sun, Moon } from 'lucide-react'
+import { useTheme } from '../context/ThemeContext'
 
 const BarraNavegacao: React.FC = () => {
   const [estaAberto, setEstaAberto] = useState(false)
   const localizacao = useLocation()
+  const { theme, toggleTheme } = useTheme()
 
   const navegacao = [
     { nome: 'Início', href: '/', icone: Home },
@@ -55,25 +57,44 @@ const BarraNavegacao: React.FC = () => {
                 </Link>
               )
             })}
+            {/* Theme toggle button */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="ml-4 p-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
           </div>
 
           {/* Botão CTA */}
           <div className="hidden lg:flex items-center space-x-4">
             <Link
               to="/consultation"
-              className="botao-edenred-primario text-sm"
+              className="botao-edenred-primario text-sm flex items-center gap-2 px-4 py-2 min-w-[140px]"
             >
-              <Search size={16} className="mr-2" />
-              Nova Consulta
+              <Search size={14} />
+              <span className="whitespace-nowrap">Nova Consulta</span>
             </Link>
           </div>
 
           {/* Menu Mobile */}
-          <div className="lg:hidden flex items-center">
+          <div className="lg:hidden flex items-center space-x-2">
+            {/* Theme toggle button mobile */}
             <button
-              onClick={() => setEstaAberto(!estaAberto)}
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
               className="p-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
             >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button
+              onClick={() => setEstaAberto(!estaAberto)}
+              className="p-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+              aria-expanded={estaAberto}
+              aria-controls="mobile-menu"
+            >
+              <span className="sr-only">Abrir menu</span>
               {estaAberto ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -82,8 +103,11 @@ const BarraNavegacao: React.FC = () => {
 
       {/* Navegação Mobile */}
       {estaAberto && (
-        <div className="lg:hidden border-t border-gray-100 bg-white">
-          <div className="px-4 pt-4 pb-6 space-y-2">
+        <div 
+          id="mobile-menu"
+          className="lg:hidden border-t border-gray-100 bg-white fixed top-[80px] left-0 right-0 z-50 shadow-lg animate-fadeIn"
+        >
+          <div className="px-4 pt-4 pb-6 space-y-2 max-h-[calc(100vh-80px)] overflow-y-auto">
             {navegacao.map((item) => {
               const Icone = item.icone
               return (
@@ -105,10 +129,10 @@ const BarraNavegacao: React.FC = () => {
               <Link
                 to="/consultation"
                 onClick={() => setEstaAberto(false)}
-                className="botao-edenred-primario w-full justify-center"
+                className="botao-edenred-primario w-full flex items-center justify-center gap-2 px-4 py-3 text-base"
               >
-                <Search size={16} className="mr-2" />
-                Nova Consulta
+                <Search size={16} />
+                <span className="whitespace-nowrap">Nova Consulta</span>
               </Link>
             </div>
           </div>

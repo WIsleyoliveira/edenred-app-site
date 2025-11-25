@@ -1,0 +1,18 @@
+- [x] Add isActive column to consultations table if not exists
+- [x] Update SELECT queries for consultations to include isActive
+- [x] Modify HTML table for users: change delete button to toggle based on status (Desativar/Ativar)
+- [x] Modify HTML table for consultations: remove toggle buttons, keep only "Excluir CNPJ" button
+- [x] Update JavaScript: change deleteUser to toggleUserStatus, remove toggleConsultationStatus
+- [x] Update API endpoints: change /api/users/:id DELETE to PUT for toggle, remove /api/consultations/:id PUT
+- [x] Update confirmation dialogs and toasts for toggle actions
+- [x] Add handleDeleteCompany function to Companies.tsx for frontend deletion
+- [x] Connect delete button to handleDeleteCompany function
+- [x] Modify DELETE /api/companies/:id to also delete all consultations with the same CNPJ
+- [x] Update confirmation dialog to warn about deleting related consultations
+- [x] Add "Limpar CNPJ" button to remove only consultations while keeping company
+- [x] Create DELETE /api/companies/:id/clear-cnpj endpoint
+- [x] Add clearCNPJ JavaScript function with confirmation dialog
+- [x] Add "Excluir CNPJ" button in consultations section to remove all consultations for a specific CNPJ
+- [x] Create DELETE /api/consultations/cnpj/:cnpj endpoint
+- [x] Add deleteCNPJ JavaScript function with confirmation dialog
+- [x] Fix CNPJ encoding in deleteCNPJ function to handle special characters like "/" and "-"

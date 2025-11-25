@@ -1,5 +1,5 @@
 import express from 'express';
-import { consultCNPJ, getConsultations, getConsultationStats, toggleFavorite } from '../controllers/consultationController.js';
+import { consultCNPJ, getConsultations, getConsultationStats, toggleFavorite, deleteConsultation } from '../controllers/consultationController.js';
 import { authenticate } from '../middleware/auth.js';
 import { validateCNPJ, validatePagination, validateObjectId, cnpjRateLimit } from '../middleware/validation.js';
 
@@ -13,7 +13,7 @@ router.use(authenticate);
  * @desc    Consultar CNPJ
  * @access  Private
  */
-router.post('/cnpj', cnpjRateLimit, validateCNPJ, consultCNPJ);
+router.post('/cnpj', validateCNPJ, consultCNPJ);
 
 /**
  * @route   GET /api/consultations
@@ -35,5 +35,12 @@ router.get('/stats', getConsultationStats);
  * @access  Private
  */
 router.patch('/:id/favorite', validateObjectId('id'), toggleFavorite);
+
+/**
+ * @route   DELETE /api/consultations/:id
+ * @desc    Deletar uma consulta
+ * @access  Private
+ */
+router.delete('/:id', validateObjectId('id'), deleteConsultation);
 
 export default router;

@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, ArrowLeft, Search, Building2, CheckCircle, FileText, Users, MapPin, Phone, BarChart3 } from 'lucide-react'
-import { apiService, type Company } from '../services/apiService'
+import { apiService } from '../services/apiService'
+import type { Company } from '../types/global'
 import toast from 'react-hot-toast'
 
 interface FormData {
@@ -48,10 +48,10 @@ const Consultation: React.FC = () => {
     setLoading(true)
     try {
       const cleanCNPJ = cnpj.replace(/\D/g, '')
-      
+
       // Tentar consultar via API do backend
-      const response = await apiService.consultCNPJ(cleanCNPJ)
-      
+      const response = await apiService.consultCNPJ(cleanCNPJ, formData.produto)
+
       if (response.success && response.data.company) {
         const company = response.data.company
         setCompanyData(company)
@@ -59,11 +59,11 @@ const Consultation: React.FC = () => {
           ...prev,
           razaoSocial: company.razaoSocial,
           telefone: company.telefone,
-          endereco: company.endereco ? 
+          endereco: company.endereco ?
             `${company.endereco.logradouro}, ${company.endereco.numero} - ${company.endereco.cidade}/${company.endereco.uf}` :
             'Endereço não informado'
         }))
-        
+
         // A consulta já foi criada pelo backend
         setConsultationId(response.data.consultation._id)
         setCurrentStep(2)
@@ -73,7 +73,14 @@ const Consultation: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Erro ao consultar:', error)
-      toast.error(error.message || 'Erro ao consultar CNPJ')
+
+      // Verificar se é erro de CNPJ recentemente consultado
+      if (error.code === 'CNPJ_RECENTLY_CONSULTED') {
+        const nextDate = new Date(error.details?.nextAvailableDate)
+        toast.error(`Este CNPJ já foi consultado recentemente. Próxima consulta disponível em: ${nextDate.toLocaleDateString('pt-BR')}`)
+      } else {
+        toast.error(error.message || 'Erro ao consultar CNPJ')
+      }
     } finally {
       setLoading(false)
     }
@@ -148,20 +155,20 @@ const Consultation: React.FC = () => {
             className="animacao-entrada"
           >
             <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-3xl mb-6">
-                <Search className="h-10 w-10 text-red-600" />
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-3xl mb-6">
+                <Search className="h-10 w-10 text-red-600 dark:text-red-400" />
               </div>
-              <h2 className="titulo-principal text-4xl font-bold text-red-600 mb-4">
+              <h2 className="titulo-principalcnpj text-4xl font-bold text-red-600 dark:text-red-400 mb-4">
                 Consulta CNPJ
               </h2>
-              <p className="texto-elegante text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="texto-elegantecnpj text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                 Bem-vindo ao Sistema Edenred Brasil. Vamos iniciar sua consulta hoje.
               </p>
             </div>
 
-            <div className="cartao-edenred max-w-2xl mx-auto">
+            <div className="cartao-edenredr max-w-2xl mx-auto">
               <div className="text-center mb-8">
-                <h3 className="titulo-secundario text-2xl font-semibold mb-6">Olá, Consultor Edenred</h3>
+                <h3 className="titulo-secundarior text-2xl font-semibold mb-6">Olá, Consultor Edenred</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                   <div className="bg-red-50 rounded-xl p-4 border border-red-100">
@@ -181,7 +188,7 @@ const Consultation: React.FC = () => {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                     CNPJ para indicar
                   </label>
                   <input
@@ -195,7 +202,7 @@ const Consultation: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                     Qual produto você vai indicar?
                   </label>
                   <select 
@@ -273,21 +280,21 @@ const Consultation: React.FC = () => {
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-3xl mb-6">
                 <Building2 className="h-10 w-10 text-red-600" />
               </div>
-              <h2 className="titulo-principal text-4xl font-bold text-red-600 mb-4">
+              <h2 className="titulo-principalcnpj text-4xl font-bold text-red-600 mb-4">
                 Informações da Empresa
               </h2>
-              <p className="texto-elegante text-xl text-gray-600">
+              <p className="texto-elegantej text-xl text-gray-600">
                 Verificação e validação dos dados empresariais
               </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
               {/* Configuração */}
-              <div className="cartao-edenred">
+              <div className="cartao-edenred-cnpj">
                 <h3 className="titulo-secundario text-xl font-semibold mb-6 text-center">Configuração</h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">CNPJ para indicar</label>
+                    <label className="blockr text-sm font-semibold text-gray-700 mb-2">CNPJ para indicar</label>
                     <input
                       type="text"
                       value={formData.cnpj}
@@ -296,21 +303,21 @@ const Consultation: React.FC = () => {
                     />
                   </div>
                   
-                  <div className="bg-red-50 rounded-xl p-4 border border-red-100">
-                    <p className="text-sm text-gray-700 mb-4 font-medium">
+                  <div className=" bg-red-50 rounded-xl p-4 border border-red-100">
+                    <p className="blockrf text-gray-700 mb-4 font-medium">
                       Deseja copiar informações existentes do CRM?
                     </p>
                     <div className="space-y-3">
                       <label className="flex items-center">
                         <input type="radio" name="copy" className="mr-3 text-red-600" />
-                        <span className="text-sm font-medium">Sim</span>
+                        <span className="blockrf font-medium">Sim</span>
                       </label>
-                      <button className="text-red-600 text-sm font-semibold underline block">
+                      <button className="blockrf font-semibold underline block">
                         Selecionar sua empresa
                       </button>
                       <label className="flex items-center">
                         <input type="radio" name="copy" className="mr-3 text-red-600" defaultChecked />
-                        <span className="text-sm font-medium">Não, continuar manualmente</span>
+                        <span className="blockrf font-medium">Não, continuar manualmente</span>
                       </label>
                     </div>
                   </div>
@@ -325,34 +332,34 @@ const Consultation: React.FC = () => {
               </div>
 
               {/* Informações */}
-              <div className="cartao-edenred">
+              <div className="cartao-edenred-cnpj">
                 <h3 className="titulo-secundario text-xl font-semibold mb-6 text-center">Informações</h3>
                 <div className="space-y-4">
                   {companyData ? (
                     <>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                        <label className="blockr text-sm font-semibold text-gray-700 mb-2 flex items-center">
                           <Building2 size={16} className="mr-2 text-red-600" />
                           RAZÃO SOCIAL
                         </label>
-                        <p className="text-lg font-medium text-gray-900">{companyData.razaoSocial}</p>
+                        <p className="text font-medium text-gray-900">{companyData.razaoSocial}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                        <label className="blockr text-sm font-semibold text-gray-700 mb-2 flex items-center">
                           <MapPin size={16} className="mr-2 text-red-600" />
                           ENDEREÇO
                         </label>
-                        <p className="text-sm text-gray-700">{formData.endereco}</p>
+                        <p className="text text-gray-700">{formData.endereco}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                        <label className="blockr text-sm font-semibold text-gray-700 mb-2 flex items-center">
                           <Phone size={16} className="mr-2 text-red-600" />
                           TELEFONE
                         </label>
-                        <p className="text-sm text-gray-700">{companyData.telefone || 'Não informado'}</p>
+                        <p className="text text-gray-700">{companyData.telefone || 'Não informado'}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="blockr text-sm font-semibold text-gray-700 mb-2">
                           SITUAÇÃO
                         </label>
                         <span className="badge-sucesso">{companyData.situacao}</span>
@@ -375,7 +382,7 @@ const Consultation: React.FC = () => {
               </div>
 
               {/* Validação */}
-              <div className="cartao-edenred">
+              <div className="cartao-edenred-cnpj">
                 <h3 className="titulo-secundario text-xl font-semibold mb-6 text-center">Validação</h3>
                 <div className="space-y-4">
                   <input
@@ -396,7 +403,7 @@ const Consultation: React.FC = () => {
                     </div>
                     <label className="flex items-center">
                       <input type="radio" name="continue" className="mr-3 text-red-600" />
-                      <span className="text-sm font-medium">Não, continuar manualmente</span>
+                      <span className="blockrf font-medium">Não, continuar manualmente</span>
                     </label>
                   </div>
                   
@@ -425,17 +432,17 @@ const Consultation: React.FC = () => {
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-3xl mb-6">
                 <Users className="h-10 w-10 text-red-600" />
               </div>
-              <h2 className="titulo-principal text-4xl font-bold text-red-600 mb-4">
+              <h2 className="titulo-principal-info text-4xl font-bold text-red-600 mb-4">
                 Informações Complementares
               </h2>
-              <p className="texto-elegante text-xl text-gray-600">
+              <p className="texto-elegantej text-xl text-gray-600">
                 Detalhes sobre quadro de funcionários e necessidades específicas
               </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              <div className="cartao-edenred">
-                <h3 className="titulo-secundario text-xl font-semibold mb-8 text-center">Quadro de Funcionários</h3>
+              <div className="cartao-edenred-cnpj">
+                <h3 className="titulo-secundarior text-xl font-semibold mb-8 text-center">Quadro de Funcionários</h3>
                 
                 <div className="space-y-6">
                   <div>
@@ -452,7 +459,7 @@ const Consultation: React.FC = () => {
                     <h4 className="font-semibold text-gray-900 mb-4">NÚMERO DE FUNCIONÁRIOS</h4>
                     <div className="space-y-3">
                       {['1-10', '11-50', '51-100', '101-500', '500+'].map((range) => (
-                        <label key={range} className="flex items-center">
+                        <label key={range} className="blockg flex items-center text-black">
                           <input 
                             type="radio" 
                             name="funcionarios" 
@@ -461,7 +468,7 @@ const Consultation: React.FC = () => {
                             onChange={(e) => handleInputChange('quantidadeFuncionarios', e.target.value)}
                             className="mr-3 text-red-600" 
                           />
-                          <span className="font-medium">{range} funcionários</span>
+                          <span className="blockg font-medium">{range} funcionários</span>
                         </label>
                       ))}
                     </div>
@@ -476,7 +483,7 @@ const Consultation: React.FC = () => {
                 </button>
               </div>
 
-              <div className="cartao-edenred">
+              <div className="cartao-edenred-cnpj">
                 <h3 className="titulo-secundario text-xl font-semibold mb-8 text-center">Necessidades Específicas</h3>
                 
                 <div className="space-y-6">
@@ -489,16 +496,16 @@ const Consultation: React.FC = () => {
                     </p>
                     
                     <div className="space-y-3">
-                      <label className="flex items-center">
+                      <label className="blockg flex items-center">
                         <input 
                           type="radio" 
                           name="maisInfo" 
                           value="sim"
                           checked={formData.maisInformacoes}
                           onChange={(e) => handleInputChange('maisInformacoes', true)}
-                          className="mr-3 text-blue-600" 
+                          className="blockg mr-3 text-blue-600" 
                         />
-                        <span className="font-medium">Sim, tenho informações adicionais</span>
+                        <span className="blockrf font-medium">Sim, tenho informações adicionais</span>
                       </label>
                       <label className="flex items-center">
                         <input 
@@ -509,12 +516,15 @@ const Consultation: React.FC = () => {
                           onChange={(e) => handleInputChange('maisInformacoes', false)}
                           className="mr-3 text-blue-600" 
                         />
-                        <span className="font-medium">Não, continuar sem detalhes</span>
+                        <span className="blockrf font-medium">Não, continuar sem detalhes</span>
                       </label>
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                    // TODO: Implementar abertura do formulário detalhado por produto
+                    toast('Funcionalidade em desenvolvimento', { icon: 'ℹ️' })
+                  }}>
                     <p className="text-sm text-gray-600 text-center">
                       📋 ABRIR FORMULÁRIO DETALHADO POR PRODUTO
                     </p>
@@ -545,15 +555,15 @@ const Consultation: React.FC = () => {
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-3xl mb-6">
                 <FileText className="h-10 w-10 text-red-600" />
               </div>
-              <h2 className="titulo-principal text-4xl font-bold text-red-600 mb-4">
+              <h2 className="titulo-principalcnpj text-4xl font-bold text-red-600 mb-4">
                 Acompanhamento de Indicações
               </h2>
-              <p className="texto-elegante text-xl text-gray-600">
+              <p className="texto-elegantej text-xl text-gray-600">
                 Painel de controle dos processos em andamento
               </p>
             </div>
 
-            <div className="cartao-edenred max-w-7xl mx-auto">
+            <div className="cartao-edenred-cnpj max-w-7xl mx-auto">
               <div className="mb-8">
                 <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-6 rounded-xl mb-6">
                   <h3 className="font-bold text-center text-lg">
@@ -582,60 +592,60 @@ const Consultation: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       <tr className="hover:bg-red-50 transition-colors">
-                        <td className="px-6 py-4 font-medium">18/04/2024</td>
-                        <td className="px-6 py-4 font-bold text-red-600">001</td>
-                        <td className="px-6 py-4 font-mono">12.345.678/0001-90</td>
-                        <td className="px-6 py-4 font-semibold">ANTONIO DISTRIBUIÇÃO</td>
-                        <td className="px-6 py-4">
+                        <td className="text-v px-6 py-4 font-medium">18/04/2024</td>
+                        <td className="text-v px-6 py-4 font-bold text-red-600">001</td>
+                        <td className="text-v px-6 py-4 font-mono">12.345.678/0001-90</td>
+                        <td className="text-v px-6 py-4 font-semibold">ANTONIO DISTRIBUIÇÃO</td>
+                        <td className="text-v px-6 py-4">
                           <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
                             FLEET
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="text-v px-6 py-4">
                           <span className="badge-em-andamento">EM NEGOCIAÇÃO</span>
                         </td>
                       </tr>
                       <tr className="hover:bg-red-50 transition-colors">
-                        <td className="px-6 py-4 font-medium">17/01/2024</td>
-                        <td className="px-6 py-4 font-bold text-red-600">002</td>
-                        <td className="px-6 py-4 font-mono">98.765.432/0001-10</td>
-                        <td className="px-6 py-4 font-semibold">ELIANE SERVIÇOS</td>
-                        <td className="px-6 py-4">
-                          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                        <td className="text-v px-6 py-4 font-medium">17/01/2024</td>
+                        <td className="text-v px-6 py-4 font-bold text-red-600">002</td>
+                        <td className="text-v px-6 py-4 font-mono">98.765.432/0001-10</td>
+                        <td className="text-v px-6 py-4 font-semibold">ELIANE SERVIÇOS</td>
+                        <td className="text-v px-6 py-4">
+                          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap">
                             TICKET RESTAURANT
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                        <td className="text-v px-6 py-4">
+                          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap">
                             EM PROCESSAMENTO
                           </span>
                         </td>
                       </tr>
                       <tr className="hover:bg-red-50 transition-colors">
-                        <td className="px-6 py-4 font-medium">23/02/2024</td>
-                        <td className="px-6 py-4 font-bold text-red-600">003</td>
-                        <td className="px-6 py-4 font-mono">11.222.333/0001-44</td>
-                        <td className="px-6 py-4 font-semibold">LEA CONSULTORIA</td>
-                        <td className="px-6 py-4">
+                        <td className="text-v px-6 py-4 font-medium">23/02/2024</td>
+                        <td className="text-v px-6 py-4 font-bold text-red-600">003</td>
+                        <td className="text-v px-6 py-4 font-mono">11.222.333/0001-44</td>
+                        <td className="text-v px-6 py-4 font-semibold">LEA CONSULTORIA</td>
+                        <td className="text-v px-6 py-4">
                           <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
                             PAY
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="text-v px-6 py-4">
                           <span className="badge-sucesso">CONCLUÍDO E GANHO</span>
                         </td>
                       </tr>
                       <tr className="hover:bg-red-50 transition-colors">
-                        <td className="px-6 py-4 font-medium">22/06/2024</td>
-                        <td className="px-6 py-4 font-bold text-red-600">004</td>
-                        <td className="px-6 py-4 font-mono">55.666.777/0001-88</td>
-                        <td className="px-6 py-4 font-semibold">ERIC INDÚSTRIAS</td>
-                        <td className="px-6 py-4">
+                        <td className="text-v px-6 py-4 font-medium">22/06/2024</td>
+                        <td className="text-v px-6 py-4 font-bold text-red-600">004</td>
+                        <td className="text-v px-6 py-4 font-mono">55.666.777/0001-88</td>
+                        <td className="text-v px-6 py-4 font-semibold">ERIC INDÚSTRIAS</td>
+                        <td className="text-v px-6 py-4">
                           <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">
                             ALIMENTA
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="text-v px-6 py-4">
                           <span className="badge-erro">CONCLUÍDO E PERDIDO</span>
                         </td>
                       </tr>
@@ -678,27 +688,27 @@ const Consultation: React.FC = () => {
               </p>
               
               {companyData && (
-                <div className="cartao-edenred max-w-3xl mx-auto mb-12">
-                  <h3 className="titulo-secundario text-2xl font-semibold mb-8">Resumo da Consulta</h3>
+                <div className="cartao-edenred-cnpj max-w-3xl mx-auto mb-12">
+                  <h3 className="titulo-secundarior text-2xl font-semibold mb-8">Resumo da Consulta</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-4">
                       <div className="text-left">
-                        <p className="text-sm text-gray-500 font-semibold">CNPJ</p>
-                        <p className="text-xl font-bold text-gray-900">{formatCNPJ(companyData.cnpj)}</p>
+                        <p className="text text-sm text-gray-500 font-semibold">CNPJ</p>
+                        <p className="text text-xl font-bold text-gray-900">{formatCNPJ(companyData.cnpj)}</p>
                       </div>
                       <div className="text-left">
-                        <p className="text-sm text-gray-500 font-semibold">RAZÃO SOCIAL</p>
-                        <p className="text-xl font-bold text-gray-900">{companyData.razaoSocial}</p>
+                        <p className="text text-sm text-gray-500 font-semibold">RAZÃO SOCIAL</p>
+                        <p className="text text-xl font-bold text-gray-900">{companyData.razaoSocial}</p>
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <div className="text-left">
-                        <p className="text-sm text-gray-500 font-semibold">SITUAÇÃO</p>
+                      <div className=" text-left">
+                        <p className="text text-sm text-gray-500 font-semibold">SITUAÇÃO</p>
                         <span className="badge-sucesso text-lg">{companyData.situacao}</span>
                       </div>
                       <div className="text-left">
-                        <p className="text-sm text-gray-500 font-semibold">PORTE</p>
-                        <p className="text-xl font-bold text-gray-900">{companyData.porte}</p>
+                        <p className="text text-sm text-gray-500 font-semibold">PORTE</p>
+                        <p className="text text-xl font-bold text-gray-900">{companyData.porte}</p>
                       </div>
                     </div>
                   </div>
@@ -755,21 +765,21 @@ const Consultation: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen consultation-section py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Barra de progresso brasileira */}
         {currentStep < 5 && (
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
-                <div className="bg-white rounded-lg px-4 py-2 shadow-sm border border-red-100">
-                  <span className="text-sm font-semibold text-red-600">
+                <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm border border-red-100 dark:border-red-900">
+                  <span className="text-sm font-semibold text-red-600 dark:text-red-400">
                     Etapa {currentStep} de {totalSteps}
                   </span>
                 </div>
               </div>
-              <div className="bg-white rounded-lg px-4 py-2 shadow-sm border border-red-100">
-                <span className="text-sm font-semibold text-gray-600">
+              <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm border border-red-100 dark:border-red-900">
+                <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
                   {Math.round((currentStep / totalSteps) * 100)}% concluído
                 </span>
               </div>

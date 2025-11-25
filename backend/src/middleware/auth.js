@@ -1,16 +1,22 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+// Este arquivo contém middlewares de autenticação e autorização.
+// Implementa JWT (JSON Web Tokens) para controle de acesso.
+// Fluxo: Token → Verificação → Busca usuário → Autorização
 
-// Middleware para verificar token JWT
+import jwt from 'jsonwebtoken';
+import { obterAdaptadorBanco } from '../config/dbAdapter.js'; // Adaptador para acesso ao banco
+
+// =================== AUTENTICAÇÃO JWT ===================
+// Middleware principal: verifica token JWT e carrega usuário
 export const authenticate = async (req, res, next) => {
   try {
     let token;
 
-    // Verificar se o token existe no header Authorization
+    // Extrai token do header Authorization (formato: Bearer <token>)
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
     }
 
+    // Se não há token, retorna erro 401
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -20,12 +26,14 @@ export const authenticate = async (req, res, next) => {
     }
 
     try {
-      // Verificar e decodificar o token
+      // Verifica e decodifica o token JWT
       const decoded = jwt.verify(token, process.env.CHAVE_SECRETA_JWT || 'chave_secreta_padrao');
-      
-      // Buscar o usuário no banco
-      const user = await User.findById(decoded.id).select('-password');
-      
+
+      // Busca usuário no banco usando o ID do token
+      const db = obterAdaptadorBanco();
+      const user = await db.buscarUsuarioPorId(decoded.id);
+
+      // Verifica se usuário existe
       if (!user) {
         return res.status(401).json({
           success: false,
@@ -34,6 +42,7 @@ export const authenticate = async (req, res, next) => {
         });
       }
 
+      // Verifica se conta está ativa
       if (!user.isActive) {
         return res.status(401).json({
           success: false,
@@ -42,11 +51,12 @@ export const authenticate = async (req, res, next) => {
         });
       }
 
-      // Adicionar usuário ao request
+      // Adiciona dados do usuário ao objeto request
       req.user = user;
-      next();
+      next(); // Continua para o próximo middleware/controller
 
     } catch (jwtError) {
+      // Trata diferentes tipos de erro do JWT
       let message = 'Token inválido ou expirado.';
       let code = 'INVALID_TOKEN';
 
@@ -75,10 +85,11 @@ export const authenticate = async (req, res, next) => {
   }
 };
 
-// Middleware para verificar permissões de admin
+// =================== AUTORIZAÇÃO POR PERMISSÕES ===================
+// Middleware para verificar se usuário é administrador
 export const requireAdmin = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
-    next();
+    next(); // Usuário é admin, continua
   } else {
     return res.status(403).json({
       success: false,
@@ -88,12 +99,13 @@ export const requireAdmin = (req, res, next) => {
   }
 };
 
-// Middleware para verificar se o usuário é o próprio ou admin
+// Middleware para verificar propriedade dos recursos (próprio usuário ou admin)
 export const requireOwnershipOrAdmin = (req, res, next) => {
-  const userId = req.params.userId || req.body.userId;
-  
-  if (req.user && (req.user._id.toString() === userId || req.user.role === 'admin')) {
-    next();
+  const userId = req.params.userId || req.body.userId; // ID do usuário dono do recurso
+
+  // Permite acesso se: usuário logado é o dono OU é admin
+  if (req.user && (req.user.id.toString() === userId || req.user.role === 'admin')) {
+    next(); // Acesso autorizado
   } else {
     return res.status(403).json({
       success: false,
@@ -114,9 +126,10 @@ export const optionalAuth = async (req, res, next) => {
 
     if (token) {
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret_key');
-        const user = await User.findById(decoded.id).select('-password');
-        
+        const decoded = jwt.verify(token, process.env.CHAVE_SECRETA_JWT || 'chave_secreta_padrao');
+        const db = obterAdaptadorBanco();
+        const user = await db.buscarUsuarioPorId(decoded.id);
+
         if (user && user.isActive) {
           req.user = user;
         }
@@ -143,6 +156,7 @@ export const generateToken = (userId) => {
     }
   );
 };
+
 
 // Utilitário para extrair informações do token sem verificar
 export const decodeToken = (token) => {
