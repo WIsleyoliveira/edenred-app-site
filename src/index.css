@@ -384,6 +384,11 @@ body {
   background: rgba(227, 30, 36, 0.05);
 }
 
+.percent{
+  color: var(--edenred-noir)!important;
+  background-color: var(--edenred-blanc)!important;
+}
+
 .link-navegacao-edenred.active::after {
   content: '';
   position: absolute;
