@@ -1,45 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, BarChart3, Building2, Users, CheckCircle, ArrowRight, TrendingUp, Clock, Award } from 'lucide-react'
-import { lumi } from '../lib/lumi'
-import toast from 'react-hot-toast'
+import { Search, BarChart3, Building2, TrendingUp, Clock, Award, ArrowRight } from 'lucide-react'
+import { usePlatformStats } from '../hooks/usePlatformStats'
 
 const Inicio: React.FC = () => {
-  const [estatisticas, setEstatisticas] = useState({
-    totalEmpresas: 0,
-    totalConsultas: 0,
-    processosAtivos: 0
-  })
-  const [carregando, setCarregando] = useState(true)
-
-  useEffect(() => {
-    buscarEstatisticas()
-  }, [])
-
-  const buscarEstatisticas = async () => {
-    try {
-      const [resultadoEmpresas, resultadoConsultas] = await Promise.all([
-        lumi.entities.companies.list(),
-        lumi.entities.consultations.list()
-      ])
-
-      const processosAtivos = resultadoEmpresas.list.filter(
-        (empresa: any) => empresa.status === 'EM_NEGOCIACAO' || empresa.status === 'EM_PROCESSAMENTO'
-      ).length
-
-      setEstatisticas({
-        totalEmpresas: resultadoEmpresas.list.length,
-        totalConsultas: resultadoConsultas.list.length,
-        processosAtivos
-      })
-    } catch (erro) {
-      console.error('Erro ao carregar estatísticas:', erro)
-      toast.error('Erro ao carregar dados')
-    } finally {
-      setCarregando(false)
-    }
-  }
+  const { stats, loading } = usePlatformStats(10000); // Atualiza a cada 10 segundos
 
   const features = [
     {
@@ -155,22 +121,22 @@ const Inicio: React.FC = () => {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <span className="text-red-100">Consultas Hoje</span>
-                    <span className="text-2xl font-bold text-white">+24</span>
+                    <span className="text-2xl font-bold text-white">+{loading ? '...' : stats.consultasRealizadas}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-red-100">Empresas Ativas</span>
-                    <span className="text-2xl font-bold text-white">{carregando ? '...' : estatisticas.totalEmpresas}</span>
+                    <span className="text-2xl font-bold text-white">{loading ? '...' : stats.empresasCadastradas}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-red-100">Processos em Andamento</span>
-                    <span className="text-2xl font-bold text-white">{carregando ? '...' : estatisticas.processosAtivos}</span>
+                    <span className="text-2xl font-bold text-white">{loading ? '...' : stats.processosAtivos}</span>
                   </div>
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-white/20">
                   <div className="flex items-center text-red-100">
                     <Clock size={16} className="mr-2" />
-                    <span className="text-sm">Última atualização: {new Date().toLocaleTimeString('pt-BR')}</span>
+                    <span className="text-sm">Última atualização: {new Date(stats.ultimaAtualizacao).toLocaleTimeString('pt-BR')}</span>
                   </div>
                 </div>
               </div>
@@ -203,10 +169,10 @@ const Inicio: React.FC = () => {
                 <Building2 className="h-10 w-10 text-red-600" />
               </div>
               <h3 className="text-4xl font-bold text-gray-900 mb-2">
-                {carregando ? (
+                {loading ? (
                   <div className="carregamento-edenred mx-auto"></div>
                 ) : (
-                  estatisticas.totalEmpresas.toLocaleString('pt-BR')
+                  stats.empresasCadastradas.toLocaleString('pt-BR')
                 )}
               </h3>
               <p className="texto-eleganter font-semibold">Empresas Cadastradas</p>
@@ -218,10 +184,10 @@ const Inicio: React.FC = () => {
                 <Search className="h-10 w-10 text-green-600" />
               </div>
               <h3 className="text-4xl font-bold text-gray-900 mb-2">
-                {carregando ? (
+                {loading ? (
                   <div className="carregamento-edenred mx-auto"></div>
                 ) : (
-                  estatisticas.totalConsultas.toLocaleString('pt-BR')
+                  stats.consultasRealizadas.toLocaleString('pt-BR')
                 )}
               </h3>
               <p className="texto-eleganter font-semibold">Consultas Realizadas</p>
@@ -233,10 +199,10 @@ const Inicio: React.FC = () => {
                 <TrendingUp className="h-10 w-10 text-blue-600" />
               </div>
               <h3 className="text-4xl font-bold text-gray-900 mb-2">
-                {carregando ? (
+                {loading ? (
                   <div className="carregamento-edenred mx-auto"></div>
                 ) : (
-                  estatisticas.processosAtivos.toLocaleString('pt-BR')
+                  stats.processosAtivos.toLocaleString('pt-BR')
                 )}
               </h3>
               <p className="texto-eleganter font-semibold">Processos Ativos</p>

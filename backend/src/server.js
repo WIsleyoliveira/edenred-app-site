@@ -36,6 +36,7 @@ import consultationRoutes from './routes/consultations.js';
 import landscapeRoutes from './routes/landscapes.js';
 import uploadRoutes from './routes/upload.js';
 import chatbotRoutes from './routes/chatbot.js';
+import statsRoutes from './routes/stats.js';
 
 const app = express();
 
@@ -167,6 +168,7 @@ app.use('/api/consultations', consultationRoutes);
 app.use('/api/landscapes', landscapeRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Servir frontend em produção (DEPOIS das rotas da API)
 if (process.env.NODE_ENV === 'production' || process.env.AMBIENTE_EXECUCAO === 'producao') {
