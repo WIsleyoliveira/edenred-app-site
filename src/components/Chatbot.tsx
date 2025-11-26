@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 import './Chatbot.css';
 
 interface Message {
@@ -16,8 +17,6 @@ interface QuickReply {
   text: string;
   question: string;
 }
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);

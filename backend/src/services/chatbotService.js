@@ -238,7 +238,8 @@ export const checkOllamaHealth = async () => {
       };
     } else {
       // Testa Ollama
-      const response = await axios.get(`${OLLAMA_URL}/api/tags`, {
+      const ollamaBaseUrl = OLLAMA_API_URL.replace('/api/generate', '');
+      const response = await axios.get(`${ollamaBaseUrl}/api/tags`, {
         timeout: 3000
       });
       return {
