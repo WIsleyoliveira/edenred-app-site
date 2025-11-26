@@ -125,12 +125,12 @@ app.get('/health', (req, res) => {
     message: 'Servidor funcionando normalmente',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
-    environment: process.env.AMBIENTE_EXECUCAO || 'desenvolvimento'
+    environment: process.env.AMBIENTE_EXECUCAO || process.env.NODE_ENV || 'desenvolvimento'
   });
 });
 
-// Rota raiz
-app.get('/', (req, res) => {
+// Rota raiz da API
+app.get('/api', (req, res) => {
   res.json({
     success: true,
     message: 'API do Sistema de Consulta CNPJ',
@@ -157,7 +157,24 @@ app.use('/api/landscapes', landscapeRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 
-// Middleware para rotas não encontradas
+// Servir frontend em produção (DEPOIS das rotas da API)
+if (process.env.NODE_ENV === 'production' || process.env.AMBIENTE_EXECUCAO === 'producao') {
+  const frontendPath = path.join(__dirname, '../../dist');
+  
+  // Servir arquivos estáticos do frontend
+  app.use(express.static(frontendPath));
+  
+  // Rota catch-all para SPA - deve vir ANTES do middleware 404
+  app.get('*', (req, res, next) => {
+    // Não interceptar rotas da API
+    if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/') || req.path === '/health') {
+      return next();
+    }
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+}
+
+// Middleware para rotas não encontradas (404)
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
