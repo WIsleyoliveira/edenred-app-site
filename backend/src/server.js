@@ -222,18 +222,18 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Configurar porta
-const PORT = process.env.PORTA_SERVIDOR || 5000;
+// Configurar porta (Railway usa PORT, local usa PORTA_SERVIDOR)
+const PORT = process.env.PORT || process.env.PORTA_SERVIDOR || 5000;
 
 // Inicializar app e banco
 inicializarAplicacao();
 
 // Iniciar servidor
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 Servidor rodando em modo ${process.env.AMBIENTE_EXECUCAO || 'desenvolvimento'}`);
-  console.log(`📡 URL: http://localhost:${PORT}`);
-  console.log(`📊 Health Check: http://localhost:${PORT}/health`);
-  console.log(`📚 API Docs: http://localhost:${PORT}/api/docs`);
+  console.log(`📡 URL: http://0.0.0.0:${PORT}`);
+  console.log(`📊 Health Check: http://0.0.0.0:${PORT}/health`);
+  console.log(`📚 API Docs: http://0.0.0.0:${PORT}/api/docs`);
   console.log(`⏰ Iniciado em: ${new Date().toLocaleString('pt-BR')}\n`);
 });
 
