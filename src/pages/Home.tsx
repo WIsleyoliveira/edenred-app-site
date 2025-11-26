@@ -161,10 +161,20 @@ const Inicio: React.FC = () => {
             <p className="texto-elegantej text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Descubra as métricas principais da nossa plataforma Edenred Brasil
             </p>
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-gray-500">Atualização em tempo real</span>
+            </div>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div variants={itemVariants} className="cartao-edenred text-center group">
+            <motion.div 
+              variants={itemVariants} 
+              className="cartao-edenred text-center group"
+              key={stats.empresasCadastradas}
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Building2 className="h-10 w-10 text-red-600" />
               </div>
@@ -172,14 +182,27 @@ const Inicio: React.FC = () => {
                 {loading ? (
                   <div className="carregamento-edenred mx-auto"></div>
                 ) : (
-                  stats.empresasCadastradas.toLocaleString('pt-BR')
+                  <motion.span
+                    key={stats.empresasCadastradas}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {stats.empresasCadastradas.toLocaleString('pt-BR')}
+                  </motion.span>
                 )}
               </h3>
               <p className="texto-eleganter font-semibold">Empresas Cadastradas</p>
               <p className="text-sm text-gray-500 mt-2">Base de dados brasileira</p>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="cartao-edenred text-center group">
+            <motion.div 
+              variants={itemVariants} 
+              className="cartao-edenred text-center group"
+              key={stats.consultasRealizadas}
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Search className="h-10 w-10 text-green-600" />
               </div>
@@ -187,14 +210,27 @@ const Inicio: React.FC = () => {
                 {loading ? (
                   <div className="carregamento-edenred mx-auto"></div>
                 ) : (
-                  stats.consultasRealizadas.toLocaleString('pt-BR')
+                  <motion.span
+                    key={stats.consultasRealizadas}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {stats.consultasRealizadas.toLocaleString('pt-BR')}
+                  </motion.span>
                 )}
               </h3>
               <p className="texto-eleganter font-semibold">Consultas Realizadas</p>
               <p className="text-sm text-gray-500 mt-2">Pesquisas efetuadas</p>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="cartao-edenred text-center group">
+            <motion.div 
+              variants={itemVariants} 
+              className="cartao-edenred text-center group"
+              key={stats.processosAtivos}
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
                 <TrendingUp className="h-10 w-10 text-blue-600" />
               </div>
@@ -202,7 +238,14 @@ const Inicio: React.FC = () => {
                 {loading ? (
                   <div className="carregamento-edenred mx-auto"></div>
                 ) : (
-                  stats.processosAtivos.toLocaleString('pt-BR')
+                  <motion.span
+                    key={stats.processosAtivos}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {stats.processosAtivos.toLocaleString('pt-BR')}
+                  </motion.span>
                 )}
               </h3>
               <p className="texto-eleganter font-semibold">Processos Ativos</p>
