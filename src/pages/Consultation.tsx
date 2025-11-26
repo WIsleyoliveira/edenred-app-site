@@ -778,7 +778,7 @@ const Consultation: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm border border-red-100 dark:border-red-900">
+              <div className=" bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm border border-red-100 dark:border-red-900">
                 <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
                   {Math.round((currentStep / totalSteps) * 100)}% concluído
                 </span>
