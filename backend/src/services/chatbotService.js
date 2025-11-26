@@ -1,11 +1,15 @@
-// Serviço de Chatbot com IA (Ollama + Llama 3.2)
+// Serviço de Chatbot com IA (Ollama + Llama 3.2 ou OpenAI)
 // Este serviço gerencia conversas com IA para responder perguntas sobre Edenred
+// Suporta Ollama (local) e OpenAI (produção)
 
 import axios from 'axios';
 
-// URL do Ollama rodando localmente
-const OLLAMA_API_URL = 'http://localhost:11434/api/generate';
-const MODEL_NAME = 'llama3.2:3b';
+// Configuração dinâmica: usa OpenAI se a chave estiver configurada, senão usa Ollama
+const USE_OPENAI = !!process.env.OPENAI_API_KEY;
+const OLLAMA_API_URL = process.env.OLLAMA_URL || 'http://localhost:11434/api/generate';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3.2:3b';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 
 // Base de conhecimento sobre Edenred
 const KNOWLEDGE_BASE = `
@@ -106,6 +110,7 @@ const conversationHistory = new Map();
 
 /**
  * Envia mensagem para a IA e obtém resposta
+ * Usa OpenAI se configurado, senão usa Ollama
  */
 export const sendMessageToAI = async (userId, userMessage) => {
   try {
@@ -118,27 +123,59 @@ export const sendMessageToAI = async (userId, userMessage) => {
       content: userMessage
     });
 
-    // Monta o prompt completo com contexto
-    const fullPrompt = `${SYSTEM_PROMPT}
+    let aiResponse;
+
+    if (USE_OPENAI) {
+      // ===== USAR OPENAI =====
+      console.log('🤖 Usando OpenAI API...');
+      
+      const messages = [
+        { role: 'system', content: SYSTEM_PROMPT },
+        ...history
+      ];
+
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: OPENAI_MODEL,
+          messages: messages,
+          max_tokens: 500,
+          temperature: 0.7
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      aiResponse = response.data.choices[0].message.content.trim();
+
+    } else {
+      // ===== USAR OLLAMA =====
+      console.log('🤖 Usando Ollama local...');
+      
+      const fullPrompt = `${SYSTEM_PROMPT}
 
 Histórico da conversa:
 ${history.map(msg => `${msg.role === 'user' ? 'Usuário' : 'Assistente'}: ${msg.content}`).join('\n')}
 
 Responda de forma clara e objetiva (máximo 3 parágrafos):`;
 
-    // Envia para Ollama
-    const response = await axios.post(OLLAMA_API_URL, {
-      model: MODEL_NAME,
-      prompt: fullPrompt,
-      stream: false,
-      options: {
-        temperature: 0.7, // Criatividade moderada
-        top_p: 0.9,
-        max_tokens: 500 // Resposta curta
-      }
-    });
+      const response = await axios.post(OLLAMA_API_URL, {
+        model: OLLAMA_MODEL,
+        prompt: fullPrompt,
+        stream: false,
+        options: {
+          temperature: 0.7,
+          top_p: 0.9,
+          max_tokens: 500
+        }
+      });
 
-    const aiResponse = response.data.response.trim();
+      aiResponse = response.data.response.trim();
+    }
 
     // Adiciona resposta da IA ao histórico
     history.push({
@@ -157,13 +194,14 @@ Responda de forma clara e objetiva (máximo 3 parágrafos):`;
     return {
       success: true,
       message: aiResponse,
-      conversationId: userId
+      conversationId: userId,
+      provider: USE_OPENAI ? 'OpenAI' : 'Ollama'
     };
 
   } catch (error) {
-    console.error('Erro ao comunicar com Ollama:', error.message);
+    console.error('Erro ao comunicar com IA:', error.message);
     
-    // Fallback para resposta padrão se Ollama não estiver disponível
+    // Fallback para resposta padrão se IA não estiver disponível
     return {
       success: false,
       message: 'Desculpe, estou com problemas técnicos no momento. Por favor, entre em contato com nossa central de atendimento: 0800 777 8200 (disponível 24h).',
@@ -181,21 +219,41 @@ export const clearConversation = (userId) => {
 };
 
 /**
- * Verifica se Ollama está disponível
+ * Verifica se IA está disponível (Ollama ou OpenAI)
  */
 export const checkOllamaHealth = async () => {
   try {
-    const response = await axios.get('http://localhost:11434/api/tags', {
-      timeout: 3000
-    });
-    return {
-      available: true,
-      models: response.data.models || []
-    };
+    if (USE_OPENAI) {
+      // Testa OpenAI com uma requisição simples
+      const response = await axios.get('https://api.openai.com/v1/models', {
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`
+        },
+        timeout: 3000
+      });
+      return {
+        available: true,
+        provider: 'OpenAI',
+        models: [OPENAI_MODEL]
+      };
+    } else {
+      // Testa Ollama
+      const response = await axios.get(`${OLLAMA_URL}/api/tags`, {
+        timeout: 3000
+      });
+      return {
+        available: true,
+        provider: 'Ollama',
+        models: response.data.models || []
+      };
+    }
   } catch (error) {
     return {
       available: false,
-      error: 'Ollama não está rodando. Execute: brew services start ollama'
+      provider: USE_OPENAI ? 'OpenAI' : 'Ollama',
+      error: USE_OPENAI 
+        ? 'OpenAI API key inválida ou serviço indisponível' 
+        : 'Ollama não está rodando. Execute: brew services start ollama'
     };
   }
 };
