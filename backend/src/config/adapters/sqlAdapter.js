@@ -57,7 +57,8 @@ class AdaptadorSQL {
       console.log('✅ PostgreSQL conectado');
 
       // Sincroniza os modelos com o banco (cria/altera tabelas)
-      await this.sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+      // Usa 'alter: true' para garantir que as tabelas sejam criadas/atualizadas em produção
+      await this.sequelize.sync({ alter: true });
       console.log('✅ Tabelas sincronizadas');
 
       this.isConnected = true; // Marca como conectado

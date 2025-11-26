@@ -36,8 +36,9 @@ const connectDatabase = async () => {
     console.log('✅ PostgreSQL conectado'); // Confirmação de conexão bem-sucedida
 
     // Sincroniza os modelos com o banco (cria/altera tabelas se necessário)
-    // 'alter: true' em desenvolvimento permite alterações automáticas nas tabelas
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+    // 'alter: true' permite alterações automáticas nas tabelas
+    // Em produção, usa 'alter: true' para garantir que as tabelas sejam criadas
+    await sequelize.sync({ alter: true });
     console.log('✅ Tabelas sincronizadas'); // Confirmação de sincronização
 
     // Listener para o sinal SIGINT (Ctrl+C) para fechar a conexão graciosamente
