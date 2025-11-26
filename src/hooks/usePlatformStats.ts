@@ -31,16 +31,17 @@ export const usePlatformStats = (refreshInterval: number = 10000) => {
     try {
       const token = localStorage.getItem('token');
       
-      if (!token) {
-        // Se não houver token, retorna dados zerados
-        setLoading(false);
-        return;
+      const headers: any = {
+        'Content-Type': 'application/json'
+      };
+
+      // Adiciona token se existir (mas não é obrigatório)
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
       }
 
       const response = await axios.get(`${API_URL}/api/stats/platform`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers
       });
 
       if (response.data.success) {
@@ -49,10 +50,7 @@ export const usePlatformStats = (refreshInterval: number = 10000) => {
       }
     } catch (err: any) {
       console.error('Erro ao buscar estatísticas:', err);
-      // Não mostrar erro se for falta de autenticação
-      if (err.response?.status !== 401) {
-        setError('Erro ao carregar estatísticas');
-      }
+      setError('Erro ao carregar estatísticas');
     } finally {
       setLoading(false);
     }
