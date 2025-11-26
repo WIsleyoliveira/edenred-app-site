@@ -73,20 +73,31 @@ app.use(helmet({
 // Configuração CORS
 const opcoesCors = {
   origin: function (origin, callback) {
-    // Em desenvolvimento, permitir todas as origens localhost
-    if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1')) {
-      callback(null, true);
-    } else {
-      const allowedOrigins = process.env.ORIGENS_CORS_PERMITIDAS ? 
-        process.env.ORIGENS_CORS_PERMITIDAS.split(',') : 
-        ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'];
-      
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Não permitido pelo CORS'));
-      }
+    // Se não há origin (mesma origem/Railway), permitir
+    if (!origin) {
+      return callback(null, true);
     }
+    
+    // Em desenvolvimento, permitir todas as origens localhost
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+    
+    // Verificar origins permitidas
+    const allowedOrigins = process.env.ORIGENS_CORS_PERMITIDAS ? 
+      process.env.ORIGENS_CORS_PERMITIDAS.split(',') : 
+      ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'];
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Em produção, se for do mesmo domínio Railway, permitir
+    if (process.env.NODE_ENV === 'production' && origin.includes('railway.app')) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Não permitido pelo CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
