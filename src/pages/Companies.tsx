@@ -61,65 +61,92 @@ const Companies: React.FC = () => {
 
       // Obter usuário atual
       const user = apiService.getCurrentUser()
+      console.log('👤 Usuário atual:', user?._id)
 
       // Buscar consultas do usuário (limite razoável)
       const consultationsResponse = await apiService.getConsultations({ limit: 200 })
+      console.log('📊 Resposta de consultas:', consultationsResponse)
 
-      if (consultationsResponse.success && consultationsResponse.data?.consultations) {
-        const consultations = consultationsResponse.data.consultations
+      if (!consultationsResponse.success || !consultationsResponse.data?.consultations) {
+        console.warn('⚠️ Nenhuma consulta encontrada ou resposta inválida')
+        setCompanies([])
+        return
+      }
 
-        // Filtrar apenas consultas realizadas pelo usuário logado (se houver user)
-        const userConsultations = user
-          ? consultations.filter(c => c.userId === user._id)
-          : consultations
+      const consultations = consultationsResponse.data.consultations
+      console.log(`✅ ${consultations.length} consultas encontradas`)
 
-        // Mapear para empresas e deduplicar por CNPJ (preferir companyData se presente)
-        const mapByCnpj = new Map<string, Company>()
+      // Filtrar apenas consultas realizadas pelo usuário logado (se houver user)
+      const userConsultations = user
+        ? consultations.filter(c => c.userId === user._id)
+        : consultations
 
-        userConsultations.forEach(c => {
-          const cnpj = (c.cnpj || '')
-          const companyFromConsult = (c.companyData || null) as Company | null
+      console.log(`👥 ${userConsultations.length} consultas do usuário logado`)
 
-          if (!cnpj) return
+      // Mapear para empresas e deduplicar por CNPJ (preferir companyData se presente)
+      const mapByCnpj = new Map<string, Company>()
+
+      userConsultations.forEach((c, index) => {
+        try {
+          const cnpj = c.cnpj || ''
+          
+          if (!cnpj || !cnpj.trim()) {
+            console.warn(`⚠️ Consulta ${index} sem CNPJ válido:`, c._id)
+            return
+          }
 
           const normalized = cnpj.trim()
 
-          if (!mapByCnpj.has(normalized)) {
-            if (companyFromConsult) {
-              mapByCnpj.set(normalized, companyFromConsult)
-            } else {
-              // Se não houver companyData, tentar buscar nos companies já carregados (estado) ou construir um objeto mínimo
-              const existing = companies.find(co => co.cnpj === normalized)
-              if (existing) {
-                mapByCnpj.set(normalized, existing)
-              } else {
-                mapByCnpj.set(normalized, {
-                  _id: c._id,
-                  cnpj: normalized,
-                  razaoSocial: c.formData?.razaoSocial || 'Empresa sem registro completo',
-                  nomeFantasia: undefined,
-                  situacao: 'ATIVA',
-                  porte: 'DEMAIS',
-                  status: c.status || 'EM_ANALISE',
-                  userId: c.userId || (user?._id || ''),
-                  createdAt: c.createdAt,
-                  updatedAt: c.updatedAt
-                } as Company)
-              }
-            }
+          // Evitar duplicatas
+          if (mapByCnpj.has(normalized)) {
+            return
           }
-        })
 
-        const deduped = Array.from(mapByCnpj.values())
-        setCompanies(deduped)
-      } else {
-        // fallback para dados mock caso a API de consultas não retorne
-        setCompanies([])
+          // Tentar usar companyData se existir
+          if (c.companyData && typeof c.companyData === 'object') {
+            const companyData = c.companyData as Company
+            mapByCnpj.set(normalized, {
+              ...companyData,
+              _id: companyData._id || c._id,
+              cnpj: normalized,
+              userId: companyData.userId || c.userId || user?._id || '',
+              createdAt: companyData.createdAt || c.createdAt,
+              updatedAt: companyData.updatedAt || c.updatedAt
+            })
+          } else {
+            // Construir empresa básica a partir da consulta
+            mapByCnpj.set(normalized, {
+              _id: c._id,
+              cnpj: normalized,
+              razaoSocial: (c.formData?.razaoSocial as string) || `Empresa ${normalized}`,
+              nomeFantasia: (c.formData?.nomeFantasia as string) || undefined,
+              situacao: 'ATIVA',
+              porte: 'DEMAIS',
+              telefone: (c.formData?.telefone as string) || undefined,
+              email: (c.formData?.email as string) || undefined,
+              status: c.status || 'EM_ANALISE',
+              userId: c.userId || user?._id || '',
+              createdAt: c.createdAt,
+              updatedAt: c.updatedAt
+            } as Company)
+          }
+        } catch (itemError) {
+          console.error(`❌ Erro ao processar consulta ${index}:`, itemError, c)
+        }
+      })
+
+      const deduped = Array.from(mapByCnpj.values())
+      console.log(`🏢 ${deduped.length} empresas únicas encontradas`)
+      
+      setCompanies(deduped)
+
+      if (deduped.length === 0) {
+        toast('Nenhuma empresa consultada ainda. Faça sua primeira consulta!', { icon: 'ℹ️' })
       }
 
     } catch (error: any) {
-      console.error('Erro ao carregar empresas por consultas:', error)
-      toast.error('Erro ao carregar dados das empresas')
+      console.error('❌ Erro ao carregar empresas por consultas:', error)
+      toast.error(`Erro ao carregar dados: ${error.message || 'Erro desconhecido'}`)
       setCompanies([])
     } finally {
       setLoading(false)
