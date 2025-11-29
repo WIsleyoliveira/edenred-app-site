@@ -102,28 +102,50 @@ const Companies: React.FC = () => {
             return
           }
 
-          // Tentar usar companyData se existir
-          if (c.companyData && typeof c.companyData === 'object') {
-            const companyData = c.companyData as Company
+          // Backend retorna dados em c.result (da API) ou c.company (do banco)
+          const sourceData = (c.result || c.company || c.companyData) as any
+
+          // Se existe dados da empresa (result/company/companyData)
+          if (sourceData && typeof sourceData === 'object') {
             mapByCnpj.set(normalized, {
-              ...companyData,
-              _id: companyData._id || c._id,
+              _id: sourceData._id || sourceData.id || c._id,
               cnpj: normalized,
-              userId: companyData.userId || c.userId || user?._id || '',
-              createdAt: companyData.createdAt || c.createdAt,
-              updatedAt: companyData.updatedAt || c.updatedAt
-            })
+              razaoSocial: sourceData.razaoSocial || sourceData.razao_social || sourceData.nome || `Empresa ${normalized}`,
+              nomeFantasia: sourceData.nomeFantasia || sourceData.nome_fantasia || sourceData.fantasia || undefined,
+              situacao: sourceData.situacao || sourceData.status || 'ATIVA',
+              porte: sourceData.porte || 'DEMAIS',
+              dataAbertura: sourceData.dataAbertura || sourceData.data_abertura || sourceData.abertura || undefined,
+              naturezaJuridica: sourceData.naturezaJuridica || sourceData.natureza_juridica || undefined,
+              atividadePrincipal: sourceData.atividadePrincipal || sourceData.atividade_principal || undefined,
+              telefone: sourceData.telefone || undefined,
+              email: sourceData.email || undefined,
+              logradouro: sourceData.logradouro || sourceData.endereco?.logradouro || undefined,
+              numero: sourceData.numero || sourceData.endereco?.numero || undefined,
+              complemento: sourceData.complemento || sourceData.endereco?.complemento || undefined,
+              bairro: sourceData.bairro || sourceData.endereco?.bairro || undefined,
+              municipio: sourceData.municipio || sourceData.endereco?.municipio || sourceData.endereco?.cidade || undefined,
+              uf: sourceData.uf || sourceData.endereco?.uf || undefined,
+              cep: sourceData.cep || sourceData.endereco?.cep || undefined,
+              capitalSocial: sourceData.capitalSocial || sourceData.capital_social || undefined,
+              qsa: sourceData.qsa || [],
+              status: c.status || 'EM_ANALISE',
+              userId: c.userId || user?._id || '',
+              createdAt: c.createdAt,
+              updatedAt: c.updatedAt,
+              lastUpdated: c.updatedAt || c.createdAt
+            } as Company)
           } else {
-            // Construir empresa básica a partir da consulta
+            // Se não tem dados da empresa, tenta extrair do formData ou cria básico
+            const formData = c.formData || {}
             mapByCnpj.set(normalized, {
               _id: c._id,
               cnpj: normalized,
-              razaoSocial: (c.formData?.razaoSocial as string) || `Empresa ${normalized}`,
-              nomeFantasia: (c.formData?.nomeFantasia as string) || undefined,
+              razaoSocial: (formData.razaoSocial as string) || `Empresa ${normalized}`,
+              nomeFantasia: (formData.nomeFantasia as string) || undefined,
               situacao: 'ATIVA',
               porte: 'DEMAIS',
-              telefone: (c.formData?.telefone as string) || undefined,
-              email: (c.formData?.email as string) || undefined,
+              telefone: (formData.telefone as string) || undefined,
+              email: (formData.email as string) || undefined,
               status: c.status || 'EM_ANALISE',
               userId: c.userId || user?._id || '',
               createdAt: c.createdAt,

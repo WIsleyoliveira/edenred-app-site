@@ -78,6 +78,8 @@ export interface Consultation {
   maxSteps: number;
   completed: boolean;
   companyData?: Company;
+  result?: Company; // Dados retornados pela API externa (ReceitaWS)
+  company?: Company; // Dados da empresa associada no banco
   formData?: Record<string, any>;
   status: 'INICIADA' | 'EM_PROGRESSO' | 'FINALIZADA' | 'ERRO' | 'CANCELADA';
   progress: number;
