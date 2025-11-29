@@ -63,8 +63,8 @@ const Companies: React.FC = () => {
       const user = apiService.getCurrentUser()
       console.log('👤 Usuário atual:', user?._id)
 
-      // Buscar consultas do usuário (limite razoável)
-      const consultationsResponse = await apiService.getConsultations({ limit: 200 })
+      // Buscar consultas do usuário (limite máximo do backend é 100)
+      const consultationsResponse = await apiService.getConsultations({ limit: 100 })
       console.log('📊 Resposta de consultas:', consultationsResponse)
 
       if (!consultationsResponse.success || !consultationsResponse.data?.consultations) {
