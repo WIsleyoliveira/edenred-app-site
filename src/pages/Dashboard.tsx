@@ -226,17 +226,18 @@ const Dashboard: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white rounded-2xl p-8 shadow-xl">
-            <div className="flex items-center justify-between">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
               <div>
-                <h1 className="titulo-principal text-4xl font-bold mb-2">Painel de Controle</h1>
-                <p className="texto-elegante text-xl text-red-100">
+                <h1 className="titulo-principal text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Painel de Controle</h1>
+                <p className="texto-elegante text-sm sm:text-base md:text-xl text-red-100">
                   {currentUser?.role === 'admin' 
                     ? 'Visualização completa de todas as indicações do sistema' 
                     : 'Acompanhe suas indicações e performance'}
                 </p>
               </div>
-              <div className="hidden md:flex items-center space-x-4">
+              {/* Stats resumidos para desktop */}
+              <div className="hidden lg:flex items-center space-x-4">
                 <div className="text-center">
                   <div className="text-3xl font-bold">{stats.total}</div>
                   <div className="text-red-200 text-sm">Total</div>
@@ -266,38 +267,38 @@ const Dashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8"
         >
-          <div className="cartao-edenred text-center group hover:scale-105 transition-transform">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl mb-4">
-              <FileText className="h-8 w-8 text-blue-600" />
+          <div className="cartao-edenred text-center group hover:scale-105 transition-transform p-4 sm:p-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl mb-3 sm:mb-4">
+              <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.total}</h3>
-            <p className="texto-eleganter text-gray-600 font-semibold">Total de Indicações</p>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.total}</h3>
+            <p className="texto-eleganter text-xs sm:text-sm text-gray-600 font-semibold">Total de Indicações</p>
           </div>
 
-          <div className="cartao-edenred text-center group hover:scale-105 transition-transform">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl mb-4">
-              <TrendingUp className="h-8 w-8 text-yellow-600" />
+          <div className="cartao-edenred text-center group hover:scale-105 transition-transform p-4 sm:p-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl mb-3 sm:mb-4">
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.emNegociacao}</h3>
-            <p className="texto-eleganter text-gray-600 font-semibold">Em Negociação</p>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.emNegociacao}</h3>
+            <p className="texto-eleganter text-xs sm:text-sm text-gray-600 font-semibold">Em Negociação</p>
           </div>
 
-          <div className="cartao-edenred text-center group hover:scale-105 transition-transform">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4">
-              <BarChart3 className="h-8 w-8 text-green-600" />
+          <div className="cartao-edenred text-center group hover:scale-105 transition-transform p-4 sm:p-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-3 sm:mb-4">
+              <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.concluidas}</h3>
-            <p className="texto-eleganter text-gray-600 font-semibold">Concluídas e Ganhas</p>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.concluidas}</h3>
+            <p className="texto-eleganter text-xs sm:text-sm text-gray-600 font-semibold">Concluídas e Ganhas</p>
           </div>
 
-          <div className="cartao-edenred text-center group hover:scale-105 transition-transform">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl mb-4">
-              <Users className="h-8 w-8 text-red-600" />
+          <div className="cartao-edenred text-center group hover:scale-105 transition-transform p-4 sm:p-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl mb-3 sm:mb-4">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-red-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.perdidas}</h3>
-            <p className="texto-eleganter text-gray-600 font-semibold">Perdidas</p>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.perdidas}</h3>
+            <p className="texto-eleganter text-xs sm:text-sm text-gray-600 font-semibold">Perdidas</p>
           </div>
         </motion.div>
 
@@ -308,23 +309,24 @@ const Dashboard: React.FC = () => {
           transition={{ delay: 0.4 }}
           className="cartao-edenredash mb-8"
         >
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-              <div className="relative">
+          <div className="flex flex-col gap-4">
+            {/* Barra de busca e select */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 <input
                   type="text"
                   placeholder="Buscar por CNPJ, produto ou número..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full sm:w-80"
+                  className="pl-10 pr-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full text-sm sm:text-base"
                 />
               </div>
 
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base py-2.5 sm:py-3"
               >
                 <option value="">Todos os Status</option>
                 <option value="INICIADA">Iniciada</option>
@@ -335,33 +337,37 @@ const Dashboard: React.FC = () => {
               </select>
             </div>
 
-            <div className="flex gap-3">
+            {/* Botões de ação */}
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => {
                   fetchConsultations()
                   toast.success('Dados atualizados!')
                 }}
-                className="botao-edenred-secundario flex items-center"
+                className="botao-edenred-secundario flex items-center text-sm sm:text-base px-3 sm:px-4 py-2"
                 title="Atualizar dados"
               >
-                <svg className="mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="mr-1 sm:mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                 </svg>
-                Atualizar
+                <span className="hidden sm:inline">Atualizar</span>
+                <span className="sm:hidden">Atualizar</span>
               </button>
               <button
                 onClick={() => setShowAdvancedFilters(true)}
-                className="botao-edenred-secundario flex items-center"
+                className="botao-edenred-secundario flex items-center text-sm sm:text-base px-3 sm:px-4 py-2"
               >
-                <Filter className="mr-2" size={18} />
-                Filtros Avançados
+                <Filter className="mr-1 sm:mr-2" size={16} />
+                <span className="hidden sm:inline">Filtros Avançados</span>
+                <span className="sm:hidden">Filtros</span>
               </button>
               <button
                 onClick={exportToCSV}
-                className="botao-edenred-primario flex items-center"
+                className="botao-edenred-primario flex items-center text-sm sm:text-base px-3 sm:px-4 py-2"
               >
-                <Download className="mr-2" size={18} />
-                Exportar
+                <Download className="mr-1 sm:mr-2" size={16} />
+                <span className="hidden sm:inline">Exportar</span>
+                <span className="sm:hidden">Exportar</span>
               </button>
             </div>
           </div>
@@ -374,11 +380,11 @@ const Dashboard: React.FC = () => {
           transition={{ delay: 0.6 }}
           className="cartao-edenredash overflow-hidden"
         >
-          <div className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white p-6 mb-6 rounded-xl">
-            <h3 className="font-bold text-center text-lg mb-4">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white p-4 sm:p-6 mb-4 sm:mb-6 rounded-xl">
+            <h3 className="font-bold text-center text-base sm:text-lg mb-2 sm:mb-4">
               🔍 ACOMPANHAR INDICAÇÕES
             </h3>
-            <div className="text-center text-red-100 text-sm">
+            <div className="text-center text-red-100 text-xs sm:text-sm">
               FILTROS: NÚMERO | CNPJ | PRODUTO | STATUS
             </div>
           </div>
@@ -389,81 +395,85 @@ const Dashboard: React.FC = () => {
               <p className="text-gray-500">Carregando indicações...</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white">
-                  <tr>
-                    <th className="px-6 py-4 text-left font-semibold">DATA</th>
-                    <th className="px-6 py-4 text-left font-semibold">NÚMERO</th>
-                    <th className="px-6 py-4 text-left font-semibold">CNPJ</th>
-                    <th className="px-6 py-4 text-left font-semibold">PRODUTO</th>
-                    {currentUser?.role === 'admin' && (
-                      <th className="px-6 py-4 text-left font-semibold">USUÁRIO</th>
-                    )}
-                    <th className="px-6 py-4 text-left font-semibold">STATUS</th>
-                    <th className="px-6 py-4 text-left font-semibold">PROGRESSO</th>
-                    <th className="px-6 py-4 text-left font-semibold">AÇÕES</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredConsultations.map((consultation, index) => (
-                    <tr key={consultation._id} className="hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                      <td className="px-6 py-4 font-medium">
-                        {new Date(consultation.createdAt).toLocaleDateString('pt-BR')}
-                      </td>
-                      <td className="px-6 py-4 font-bold text-red-600">
-                        {consultation._id || `${String(index + 1).padStart(3, '0')}`}
-                      </td>
-                      <td className="px-6 py-4 font-mono text-sm">
-                        {consultation.cnpj}
-                      </td>
-                      <td className="px-6 py-4">
-                        {getProdutoBadge(consultation.produto)}
-                      </td>
-                      {currentUser?.role === 'admin' && (
-                        <td className="px-6 py-4">
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold text-sm mr-2">
-                              {consultation.userName ? consultation.userName.charAt(0).toUpperCase() : 'U'}
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <div className="overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white">
+                      <tr>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">DATA</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">NÚMERO</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">CNPJ</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">PRODUTO</th>
+                        {currentUser?.role === 'admin' && (
+                          <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">USUÁRIO</th>
+                        )}
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">STATUS</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">PROGRESSO</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">AÇÕES</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {filteredConsultations.map((consultation, index) => (
+                        <tr key={consultation._id} className="hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap">
+                            {new Date(consultation.createdAt).toLocaleDateString('pt-BR')}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-bold text-red-600 whitespace-nowrap">
+                            {consultation._id || `${String(index + 1).padStart(3, '0')}`}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs whitespace-nowrap">
+                            {consultation.cnpj}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            {getProdutoBadge(consultation.produto)}
+                          </td>
+                          {currentUser?.role === 'admin' && (
+                            <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold text-xs mr-2">
+                                  {consultation.userName ? consultation.userName.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                                <div className="hidden lg:block">
+                                  <div className="font-medium text-gray-900 text-xs sm:text-sm">{consultation.userName || 'Usuário'}</div>
+                                  <div className="text-xs text-gray-500">ID: {consultation.userId || 'N/A'}</div>
+                                </div>
+                              </div>
+                            </td>
+                          )}
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            {getStatusBadge(consultation.status)}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div className="flex items-center space-x-2">
+                              <div className="flex-1 bg-gray-200 rounded-full h-2 w-16 sm:w-24">
+                                <div 
+                                  className="bg-red-600 h-2 rounded-full transition-all" 
+                                  style={{ width: `${consultation.progress || 0}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-xs text-gray-600 font-medium">{consultation.progress || 0}%</span>
                             </div>
-                            <div>
-                              <div className="font-medium text-gray-900">{consultation.userName || 'Usuário'}</div>
-                              <div className="text-xs text-gray-500">ID: {consultation.userId || 'N/A'}</div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div className="flex space-x-1 sm:space-x-2">
+                              <button className="text-blue-600 hover:text-blue-800 transition-colors p-1">
+                                <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />
+                              </button>
+                              <button className="text-green-600 hover:text-green-800 transition-colors p-1">
+                                <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
+                              </button>
+                              <button className="text-red-600 hover:text-red-800 transition-colors p-1">
+                                <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
+                              </button>
                             </div>
-                          </div>
-                        </td>
-                      )}
-                      <td className="px-6 py-4">
-                        {getStatusBadge(consultation.status)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-2">
-                          <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-[100px]">
-                            <div 
-                              className="bg-red-600 h-2 rounded-full transition-all" 
-                              style={{ width: `${consultation.progress || 0}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs text-gray-600 font-medium">{consultation.progress || 0}%</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex space-x-2">
-                          <button className="text-blue-600 hover:text-blue-800 transition-colors">
-                            <Eye size={18} />
-                          </button>
-                          <button className="text-green-600 hover:text-green-800 transition-colors">
-                            <Edit size={18} />
-                          </button>
-                          <button className="text-red-600 hover:text-red-800 transition-colors">
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
               {filteredConsultations.length === 0 && (
                 <div className="text-center py-12">

@@ -299,20 +299,20 @@ const Companies: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white rounded-2xl p-8 shadow-xl">
-            <div className="flex items-center justify-between">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <div>
-                <h1 className="titulo-principal text-4xl font-bold mb-2">Gestão de Empresas</h1>
-                <p className="texto-elegante text-xl text-red-100 dark:text-red-200">
-                  {currentUser?.role === 'admin'
-                    ? 'Visualização completa de todas as empresas do sistema'
-                    : 'Base de dados completa de empresas brasileiras'}
+                <h1 className="titulo-principal text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Gestão de Empresas</h1>
+                <p className="texto-elegante text-sm sm:text-base md:text-xl text-red-100">
+                  {currentUser?.role === 'admin' 
+                    ? 'Visualização completa de todas as empresas do sistema' 
+                    : 'Empresas consultadas e cadastradas'}
                 </p>
               </div>
-              <div className="hidden md:flex items-center">
+              <div className="flex items-center space-x-3 sm:space-x-4">
                 <div className="text-center">
-                  <div className="text-3xl font-bold">{companies.length}</div>
-                  <div className="text-red-200 text-sm">Empresas Cadastradas</div>
+                  <div className="text-2xl sm:text-3xl font-bold">{companies.length}</div>
+                  <div className="text-red-200 text-xs sm:text-sm">Empresas</div>
                 </div>
               </div>
             </div>
@@ -326,23 +326,25 @@ const Companies: React.FC = () => {
           transition={{ delay: 0.2 }}
           className="cartao-edenredash mb-8"
         >
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Buscar por CNPJ, razão social ou nome fantasia..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full sm:w-80"
-                />
-              </div>
+          <div className="flex flex-col gap-4">
+            {/* Barra de busca */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Buscar por CNPJ, razão social ou nome fantasia..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base"
+              />
+            </div>
 
+            {/* Filtros em grid responsivo */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <select
                 value={situacaoFilter}
                 onChange={(e) => setSituacaoFilter(e.target.value)}
-                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base py-2.5 sm:py-3"
               >
                 <option value="">Todas as Situações</option>
                 <option value="ATIVA">Ativa</option>
@@ -353,7 +355,7 @@ const Companies: React.FC = () => {
               <select
                 value={porteFilter}
                 onChange={(e) => setPorteFilter(e.target.value)}
-                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base py-2.5 sm:py-3"
               >
                 <option value="">Todos os Portes</option>
                 <option value="ME">Microempresa</option>
@@ -364,7 +366,7 @@ const Companies: React.FC = () => {
               <select
                 value={atividadeFilter}
                 onChange={(e) => setAtividadeFilter(e.target.value)}
-                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="forms border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base py-2.5 sm:py-3"
               >
                 <option value="">Todas as Atividades</option>
                 <option value="Distribuição de Alimentos">Distribuição de Alimentos</option>
@@ -374,37 +376,42 @@ const Companies: React.FC = () => {
               </select>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            {/* Botões de ação */}
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button 
                 onClick={() => {
                   fetchCompanies()
                   toast.success('Dados atualizados!')
                 }}
-                className="botao-edenred-secundario flex items-center"
+                className="botao-edenred-secundario flex items-center text-sm sm:text-base px-3 sm:px-4 py-2"
                 title="Atualizar dados"
               >
-                <svg className="mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="mr-1 sm:mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                 </svg>
-                Atualizar
+                <span className="hidden sm:inline">Atualizar</span>
+                <span className="sm:hidden">Atualizar</span>
               </button>
-              <button className="botao-edenred-secundario flex items-center">
-                <Filter className="mr-2" size={18} />
-                Filtros Avançados
+              <button className="botao-edenred-secundario flex items-center text-sm sm:text-base px-3 sm:px-4 py-2">
+                <Filter className="mr-1 sm:mr-2" size={16} />
+                <span className="hidden sm:inline">Filtros Avançados</span>
+                <span className="sm:hidden">Filtros</span>
               </button>
               <button
                 onClick={exportToCSV}
-                className="botao-edenred-secundario flex items-center"
+                className="botao-edenred-secundario flex items-center text-sm sm:text-base px-3 sm:px-4 py-2"
               >
-                <Download className="mr-2" size={18} />
-                Exportar CSV
+                <Download className="mr-1 sm:mr-2" size={16} />
+                <span className="hidden sm:inline">Exportar CSV</span>
+                <span className="sm:hidden">CSV</span>
               </button>
               <button
                 onClick={() => window.location.href = '/consultation'}
-                className="botao-edenred-primario flex items-center"
+                className="botao-edenred-primario flex items-center text-sm sm:text-base px-3 sm:px-4 py-2"
               >
-                <Plus className="mr-2" size={18} />
-                Nova Empresa
+                <Plus className="mr-1 sm:mr-2" size={16} />
+                <span className="hidden sm:inline">Nova Empresa</span>
+                <span className="sm:hidden">Nova</span>
               </button>
             </div>
           </div>
@@ -423,118 +430,122 @@ const Companies: React.FC = () => {
               <p className="text-gray-500">Carregando empresas...</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white">
-                  <tr>
-                    <th className="px-6 py-4 text-left font-semibold">CNPJ</th>
-                    <th className="px-6 py-4 text-left font-semibold">RAZÃO SOCIAL</th>
-                    <th className="px-6 py-4 text-left font-semibold">SITUAÇÃO</th>
-                    <th className="px-6 py-4 text-left font-semibold">PORTE</th>
-                    {currentUser?.role === 'admin' && (
-                      <th className="px-6 py-4 text-left font-semibold">ADICIONADO POR</th>
-                    )}
-                    <th className="px-6 py-4 text-left font-semibold">CONTATO</th>
-                    <th className="px-6 py-4 text-left font-semibold">LOCALIZAÇÃO</th>
-                    <th className="px-6 py-4 text-left font-semibold">AÇÕES</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredCompanies.map((company) => (
-                    <tr key={company._id} className="hover:bg-red-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="font-mono text-sm font-semibold">{company.cnpj}</div>
-                          {company.nomeFantasia && (
-                            <div className="text-xs text-gray-500">{company.nomeFantasia}</div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="font-semibold text-gray-900 max-w-xs">
-                          {company.razaoSocial}
-                        </div>
-                        {company.atividades && company.atividades.length > 0 && (
-                          <div className="text-xs text-gray-500 mt-1">{company.atividades[0].descricao}</div>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <div className="overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white">
+                      <tr>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">CNPJ</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">RAZÃO SOCIAL</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">SITUAÇÃO</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">PORTE</th>
+                        {currentUser?.role === 'admin' && (
+                          <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">ADICIONADO POR</th>
                         )}
-                      </td>
-                      <td className="px-6 py-4">
-                        {getSituacaoBadge(company.situacao)}
-                      </td>
-                      <td className="px-6 py-4">
-                        {getPorteBadge(company.porte)}
-                      </td>
-                      {currentUser?.role === 'admin' && (
-                        <td className="px-6 py-4">
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold text-sm mr-2">
-                              U
-                            </div>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">CONTATO</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">LOCALIZAÇÃO</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">AÇÕES</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {filteredCompanies.map((company) => (
+                        <tr key={company._id} className="hover:bg-red-50 transition-colors">
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                             <div>
-                              <div className="font-medium text-gray-900 text-sm">
-                                Usuário
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                ID: {company.userId || 'Desconhecido'}
-                              </div>
+                              <div className="font-mono text-xs sm:text-sm font-semibold">{company.cnpj}</div>
+                              {company.nomeFantasia && (
+                                <div className="text-xs text-gray-500 truncate max-w-[120px] sm:max-w-xs">{company.nomeFantasia}</div>
+                              )}
                             </div>
-                          </div>
-                        </td>
-                      )}
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                          {company.telefone && (
-                            <div className="flex items-center text-sm">
-                              <Phone size={14} className="mr-1 text-gray-400" />
-                              {company.telefone}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4">
+                            <div className="font-semibold text-gray-900 text-xs sm:text-sm max-w-[150px] sm:max-w-xs truncate">
+                              {company.razaoSocial}
                             </div>
-                          )}
-                          {company.email && (
-                            <div className="flex items-center text-sm">
-                              <Mail size={14} className="mr-1 text-gray-400" />
-                              <span className="truncate max-w-32">{company.email}</span>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {company.endereco && (
-                          <div className="text-sm">
-                            <div className="flex items-center">
-                              <MapPin size={14} className="mr-1 text-gray-400" />
-                              <span className="font-medium">{company.endereco.cidade}/{company.endereco.uf}</span>
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              CEP: {company.endereco.cep}
-                            </div>
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex space-x-2">
-                          <button className="text-blue-600 hover:text-blue-800 transition-colors" title="Visualizar">
-                            <Eye size={18} />
-                          </button>
+                            {company.atividades && company.atividades.length > 0 && (
+                              <div className="text-xs text-gray-500 mt-1 truncate max-w-[150px] sm:max-w-xs">{company.atividades[0].descricao}</div>
+                            )}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            {getSituacaoBadge(company.situacao)}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            {getPorteBadge(company.porte)}
+                          </td>
                           {currentUser?.role === 'admin' && (
-                            <>
-                              <button className="text-green-600 hover:text-green-800 transition-colors" title="Editar">
-                                <Edit size={18} />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteCompany(company._id, company.cnpj)}
-                                className="text-red-600 hover:text-red-800 transition-colors"
-                                title="Excluir"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            </>
+                            <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold text-xs mr-2">
+                                  U
+                                </div>
+                                <div className="hidden lg:block">
+                                  <div className="font-medium text-gray-900 text-xs sm:text-sm">
+                                    Usuário
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    ID: {company.userId || 'Desconhecido'}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
                           )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div className="space-y-1">
+                              {company.telefone && (
+                                <div className="flex items-center text-xs sm:text-sm">
+                                  <Phone size={12} className="mr-1 text-gray-400 hidden sm:block" />
+                                  <span className="truncate max-w-[100px] sm:max-w-none">{company.telefone}</span>
+                                </div>
+                              )}
+                              {company.email && (
+                                <div className="flex items-center text-xs sm:text-sm">
+                                  <Mail size={12} className="mr-1 text-gray-400 hidden sm:block" />
+                                  <span className="truncate max-w-[100px] sm:max-w-[150px]">{company.email}</span>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            {company.endereco && (
+                              <div className="text-xs sm:text-sm">
+                                <div className="flex items-center">
+                                  <MapPin size={12} className="mr-1 text-gray-400 hidden sm:block" />
+                                  <span className="font-medium">{company.endereco.cidade}/{company.endereco.uf}</span>
+                                </div>
+                                <div className="text-xs text-gray-500 mt-1 hidden sm:block">
+                                  CEP: {company.endereco.cep}
+                                </div>
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div className="flex space-x-1 sm:space-x-2">
+                              <button className="text-blue-600 hover:text-blue-800 transition-colors p-1" title="Visualizar">
+                                <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />
+                              </button>
+                              {currentUser?.role === 'admin' && (
+                                <>
+                                  <button className="text-green-600 hover:text-green-800 transition-colors p-1" title="Editar">
+                                    <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteCompany(company._id, company.cnpj)}
+                                    className="text-red-600 hover:text-red-800 transition-colors p-1"
+                                    title="Excluir"
+                                  >
+                                    <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
               {filteredCompanies.length === 0 && (
                 <div className="text-center py-12">
