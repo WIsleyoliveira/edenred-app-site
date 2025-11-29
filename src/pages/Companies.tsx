@@ -59,116 +59,68 @@ const Companies: React.FC = () => {
     try {
       setLoading(true)
 
-      // Tentar buscar empresas da API
-      const response = await apiService.getCompanies({ limit: 100 })
+      // Obter usuário atual
+      const user = apiService.getCurrentUser()
 
-      if (response.success) {
-        setCompanies(response.data.companies)
-      } else {
-        // Fallback para dados mock se a API não estiver funcionando
-        const mockCompanies: Company[] = [
-          {
-            _id: '1',
-            cnpj: '12.345.678/0001-90',
-            razaoSocial: 'ANTONIO DISTRIBUIÇÃO LTDA',
-            nomeFantasia: 'Antonio Distribuidora',
-            situacao: 'ATIVA',
-            porte: 'DEMAIS',
-            telefone: '(11) 97463-2014',
-            email: 'contato@antonio.com.br',
-            endereco: {
-              logradouro: 'Rua das Flores',
-              numero: '123',
-              bairro: 'Centro',
-              cep: '01234-567',
-              cidade: 'São Paulo',
-              uf: 'SP'
-            },
-            atividades: [{ codigo: '47.11-4-00', descricao: 'Distribuição de Alimentos', principal: true }],
-            status: 'EM_ANALISE',
-            userId: 'user1',
-            createdAt: '2024-01-15T00:00:00.000Z',
-            updatedAt: '2024-01-15T00:00:00.000Z'
-          },
-          {
-            _id: '2',
-            cnpj: '98.765.432/0001-10',
-            razaoSocial: 'ELIANE SERVIÇOS E CONSULTORIA LTDA',
-            nomeFantasia: 'Eliane Consultoria',
-            situacao: 'ATIVA',
-            porte: 'EPP',
-            telefone: '(11) 85642-2013',
-            email: 'eliane@consultoria.com.br',
-            endereco: {
-              logradouro: 'Av. Paulista',
-              numero: '456',
-              bairro: 'Bela Vista',
-              cep: '01310-100',
-              cidade: 'São Paulo',
-              uf: 'SP'
-            },
-            atividades: [{ codigo: '70.20-4-00', descricao: 'Consultoria Empresarial', principal: true }],
-            status: 'EM_ANALISE',
-            userId: 'user2',
-            createdAt: '2024-02-10T00:00:00.000Z',
-            updatedAt: '2024-02-10T00:00:00.000Z'
-          },
-          {
-            _id: '3',
-            cnpj: '11.222.333/0001-44',
-            razaoSocial: 'LEA TECNOLOGIA E INOVAÇÃO S.A.',
-            nomeFantasia: 'Lea Tech',
-            situacao: 'ATIVA',
-            porte: 'DEMAIS',
-            telefone: '(21) 87547-3921',
-            email: 'contato@leatech.com.br',
-            endereco: {
-              logradouro: 'Rua do Ouvidor',
-              numero: '789',
-              bairro: 'Centro',
-              cep: '20040-020',
-              cidade: 'Rio de Janeiro',
-              uf: 'RJ'
-            },
-            atividades: [{ codigo: '62.01-1-00', descricao: 'Desenvolvimento de Software', principal: true }],
-            status: 'EM_ANALISE',
-            userId: 'user3',
-            createdAt: '2024-03-05T00:00:00.000Z',
-            updatedAt: '2024-03-05T00:00:00.000Z'
-          },
-          {
-            _id: '4',
-            cnpj: '55.666.777/0001-88',
-            razaoSocial: 'ERIC INDÚSTRIAS METALÚRGICAS LTDA',
-            nomeFantasia: 'Eric Metais',
-            situacao: 'SUSPENSA',
-            porte: 'DEMAIS',
-            telefone: '(19) 99999-9999',
-            email: 'eric@metalurgica.com.br',
-            endereco: {
-              logradouro: 'Distrito Industrial',
-              numero: '1000',
-              bairro: 'Distrito Industrial',
-              cep: '13100-000',
-              cidade: 'Campinas',
-              uf: 'SP'
-            },
-            atividades: [{ codigo: '24.41-4-00', descricao: 'Metalurgia', principal: true }],
-            status: 'EM_ANALISE',
-            userId: 'user4',
-            createdAt: '2024-04-12T00:00:00.000Z',
-            updatedAt: '2024-04-12T00:00:00.000Z'
+      // Buscar consultas do usuário (limite razoável)
+      const consultationsResponse = await apiService.getConsultations({ limit: 200 })
+
+      if (consultationsResponse.success && consultationsResponse.data?.consultations) {
+        const consultations = consultationsResponse.data.consultations
+
+        // Filtrar apenas consultas realizadas pelo usuário logado (se houver user)
+        const userConsultations = user
+          ? consultations.filter(c => c.userId === user._id)
+          : consultations
+
+        // Mapear para empresas e deduplicar por CNPJ (preferir companyData se presente)
+        const mapByCnpj = new Map<string, Company>()
+
+        userConsultations.forEach(c => {
+          const cnpj = (c.cnpj || '')
+          const companyFromConsult = (c.companyData || null) as Company | null
+
+          if (!cnpj) return
+
+          const normalized = cnpj.trim()
+
+          if (!mapByCnpj.has(normalized)) {
+            if (companyFromConsult) {
+              mapByCnpj.set(normalized, companyFromConsult)
+            } else {
+              // Se não houver companyData, tentar buscar nos companies já carregados (estado) ou construir um objeto mínimo
+              const existing = companies.find(co => co.cnpj === normalized)
+              if (existing) {
+                mapByCnpj.set(normalized, existing)
+              } else {
+                mapByCnpj.set(normalized, {
+                  _id: c._id,
+                  cnpj: normalized,
+                  razaoSocial: c.formData?.razaoSocial || 'Empresa sem registro completo',
+                  nomeFantasia: undefined,
+                  situacao: 'ATIVA',
+                  porte: 'DEMAIS',
+                  status: c.status || 'EM_ANALISE',
+                  userId: c.userId || (user?._id || ''),
+                  createdAt: c.createdAt,
+                  updatedAt: c.updatedAt
+                } as Company)
+              }
+            }
           }
-        ]
+        })
 
-        setCompanies(mockCompanies)
-        toast.success('Usando dados de demonstração - API não disponível')
+        const deduped = Array.from(mapByCnpj.values())
+        setCompanies(deduped)
+      } else {
+        // fallback para dados mock caso a API de consultas não retorne
+        setCompanies([])
       }
 
     } catch (error: any) {
-      console.error('Erro ao carregar empresas:', error)
+      console.error('Erro ao carregar empresas por consultas:', error)
       toast.error('Erro ao carregar dados das empresas')
-      setCompanies([]) // Lista vazia em caso de erro
+      setCompanies([])
     } finally {
       setLoading(false)
     }
@@ -178,11 +130,17 @@ const Companies: React.FC = () => {
     let filtered = companies
 
     if (searchTerm) {
-      filtered = filtered.filter(c =>
-        c.cnpj.includes(searchTerm) ||
-        c.razaoSocial?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.nomeFantasia?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      const normalizedSearch = searchTerm.replace(/\D/g, '').toLowerCase()
+
+      filtered = filtered.filter(c => {
+        const cnpjDigits = (c.cnpj || '').replace(/\D/g, '')
+        const matchesCnpj = cnpjDigits.includes(normalizedSearch) && normalizedSearch.length > 0
+
+        const nameMatch = (c.razaoSocial || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (c.nomeFantasia || '').toLowerCase().includes(searchTerm.toLowerCase())
+
+        return matchesCnpj || nameMatch
+      })
     }
 
     if (situacaoFilter) {
