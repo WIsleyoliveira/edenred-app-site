@@ -75,13 +75,18 @@ const Companies: React.FC = () => {
 
       const consultations = consultationsResponse.data.consultations
       console.log(`✅ ${consultations.length} consultas encontradas`)
+      
+      // DEBUG: Ver estrutura das consultas
+      if (consultations.length > 0) {
+        console.log('🔍 Primeira consulta (estrutura):', consultations[0])
+        console.log('🔍 userId da consulta:', consultations[0].userId)
+        console.log('🔍 _id do usuário logado:', user?._id)
+      }
 
-      // Filtrar apenas consultas realizadas pelo usuário logado (se houver user)
-      const userConsultations = user
-        ? consultations.filter(c => c.userId === user._id)
-        : consultations
-
-      console.log(`👥 ${userConsultations.length} consultas do usuário logado`)
+      // Backend já filtra por usuário autenticado, não precisa filtrar novamente
+      // A API /api/consultations retorna apenas consultas do usuário logado
+      const userConsultations = consultations
+      console.log(`👥 ${userConsultations.length} consultas do usuário atual`)
 
       // Mapear para empresas e deduplicar por CNPJ (preferir companyData se presente)
       const mapByCnpj = new Map<string, Company>()
