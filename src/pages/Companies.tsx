@@ -465,14 +465,11 @@ const Companies: React.FC = () => {
                         <tr key={company._id} className="hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                             <div>
-                              <div className="font-mono text-xs sm:text-sm font-semibold text-black dark:text-gray-100">{company.cnpj}</div>
-                              {company.nomeFantasia && (
-                                <div className="text-xs text-black dark:text-gray-400 truncate max-w-[120px] sm:max-w-xs">{company.nomeFantasia}</div>
-                              )}
+                              <div className="font-mono text-xs sm:text-sm font-semibold text-black dark:text-gray-100 opacity-100">{company.cnpj}</div>
                             </div>
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4">
-                            <div className="font-semibold text-black dark:text-gray-100 text-xs sm:text-sm max-w-[150px] sm:max-w-xs truncate">
+                            <div className="font-semibold text-black dark:text-gray-100 opacity-100 text-xs sm:text-sm max-w-[150px] sm:max-w-xs truncate">
                               {company.razaoSocial}
                             </div>
                             {company.atividades && company.atividades.length > 0 && (
