@@ -154,6 +154,14 @@ body {
   color: #000000 !important;
 }
 
+/* Garantir que nenhuma classe cinza oculte textos no modo claro */
+.table-edenred .text-gray-400,
+.table-edenred .text-gray-500,
+.table-edenred .text-gray-600,
+.table-edenred .text-gray-700 {
+  color: #000000 !important;
+}
+
 .table-edenred tr:hover {
   background-color: #fff5f5 !important; /* red-50 aproximado */
 }
