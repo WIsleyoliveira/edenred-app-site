@@ -447,8 +447,8 @@ const Dashboard: React.FC = () => {
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                             <div className="flex items-center space-x-2">
                               <div className="flex-1 bg-gray-200 rounded-full h-2 w-16 sm:w-24">
-                                <div 
-                                  className="bg-red-600 h-2 rounded-full transition-all" 
+                                <div
+                                  className="bg-red-600 h-2 rounded-full transition-all"
                                   style={{ width: `${consultation.progress || 0}%` }}
                                 ></div>
                               </div>
