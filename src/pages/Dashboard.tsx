@@ -319,7 +319,8 @@ const Dashboard: React.FC = () => {
                   placeholder="Buscar por CNPJ, produto ou número..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full text-sm sm:text-base"
+                  className="pl-10 pr-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full text-sm sm:text-base text-black dark:text-black placeholder:text-gray-400"
+                  style={{ color: '#000' }}
                 />
               </div>
 
