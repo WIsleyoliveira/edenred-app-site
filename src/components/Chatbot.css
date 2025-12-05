@@ -318,13 +318,15 @@
 @media (max-width: 640px) {
   .chatbot-window {
     width: 100vw;
-    height: 100vh;
+    height: 100dvh; /* dvh considera barras do navegador */
+    max-height: -webkit-fill-available;
     bottom: 0;
     right: 0;
     left: 0;
     top: 0;
     border-radius: 0;
     max-width: 100%;
+    margin: 0;
   }
   
   .chatbot-button {
@@ -341,11 +343,14 @@
 
   .chatbot-header {
     border-radius: 0;
-    padding: 20px 16px;
+    padding: max(20px, env(safe-area-inset-top)) 16px 16px 16px;
   }
 
   .chatbot-messages {
     padding: 16px 12px;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .chatbot-message {
