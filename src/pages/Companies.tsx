@@ -465,18 +465,18 @@ const Companies: React.FC = () => {
                         <tr key={company._id} className="hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                             <div>
-                              <div className="font-mono text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100">{company.cnpj}</div>
+                              <div className="font-mono text-xs sm:text-sm font-semibold text-black dark:text-gray-100">{company.cnpj}</div>
                               {company.nomeFantasia && (
-                                <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px] sm:max-w-xs">{company.nomeFantasia}</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-[120px] sm:max-w-xs">{company.nomeFantasia}</div>
                               )}
                             </div>
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4">
-                            <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm max-w-[150px] sm:max-w-xs truncate">
+                            <div className="font-semibold text-black dark:text-gray-100 text-xs sm:text-sm max-w-[150px] sm:max-w-xs truncate">
                               {company.razaoSocial}
                             </div>
                             {company.atividades && company.atividades.length > 0 && (
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate max-w-[150px] sm:max-w-xs">{company.atividades[0].descricao}</div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate max-w-[150px] sm:max-w-xs">{company.atividades[0].descricao}</div>
                             )}
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
@@ -492,10 +492,10 @@ const Companies: React.FC = () => {
                                   U
                                 </div>
                                 <div className="hidden lg:block">
-                                  <div className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">
+                                  <div className="font-medium text-black dark:text-gray-100 text-xs sm:text-sm">
                                     Usuário
                                   </div>
-                                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  <div className="text-xs text-gray-600 dark:text-gray-400">
                                     ID: {company.userId || 'Desconhecido'}
                                   </div>
                                 </div>
@@ -505,14 +505,14 @@ const Companies: React.FC = () => {
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                             <div className="space-y-1">
                               {company.telefone && (
-                                <div className="flex items-center text-xs sm:text-sm text-gray-900 dark:text-gray-100">
-                                  <Phone size={12} className="mr-1 text-gray-400 dark:text-gray-500 hidden sm:block" />
+                                <div className="flex items-center text-xs sm:text-sm text-black dark:text-gray-100">
+                                  <Phone size={12} className="mr-1 text-gray-500 dark:text-gray-500 hidden sm:block" />
                                   <span className="truncate max-w-[100px] sm:max-w-none">{company.telefone}</span>
                                 </div>
                               )}
                               {company.email && (
-                                <div className="flex items-center text-xs sm:text-sm text-gray-900 dark:text-gray-100">
-                                  <Mail size={12} className="mr-1 text-gray-400 dark:text-gray-500 hidden sm:block" />
+                                <div className="flex items-center text-xs sm:text-sm text-black dark:text-gray-100">
+                                  <Mail size={12} className="mr-1 text-gray-500 dark:text-gray-500 hidden sm:block" />
                                   <span className="truncate max-w-[100px] sm:max-w-[150px]">{company.email}</span>
                                 </div>
                               )}
@@ -522,10 +522,10 @@ const Companies: React.FC = () => {
                             {company.endereco && (
                               <div className="text-xs sm:text-sm">
                                 <div className="flex items-center">
-                                  <MapPin size={12} className="mr-1 text-gray-400 dark:text-gray-500 hidden sm:block" />
-                                  <span className="font-medium text-gray-900 dark:text-gray-100">{company.endereco.cidade}/{company.endereco.uf}</span>
+                                  <MapPin size={12} className="mr-1 text-gray-500 dark:text-gray-500 hidden sm:block" />
+                                  <span className="font-medium text-black dark:text-gray-100">{company.endereco.cidade}/{company.endereco.uf}</span>
                                 </div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
+                                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 hidden sm:block">
                                   CEP: {company.endereco.cep}
                                 </div>
                               </div>

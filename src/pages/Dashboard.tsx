@@ -416,13 +416,13 @@ const Dashboard: React.FC = () => {
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                       {filteredConsultations.map((consultation, index) => (
                         <tr key={consultation._id} className="hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap text-gray-900 dark:text-gray-100">
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap text-black dark:text-gray-100">
                             {new Date(consultation.createdAt).toLocaleDateString('pt-BR')}
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 whitespace-nowrap">
                             {consultation._id || `${String(index + 1).padStart(3, '0')}`}
                           </td>
-                          <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs whitespace-nowrap text-gray-900 dark:text-gray-100">
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs whitespace-nowrap text-black dark:text-gray-100">
                             {consultation.cnpj}
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
@@ -435,8 +435,8 @@ const Dashboard: React.FC = () => {
                                   {consultation.userName ? consultation.userName.charAt(0).toUpperCase() : 'U'}
                                 </div>
                                 <div className="hidden lg:block">
-                                  <div className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{consultation.userName || 'Usuário'}</div>
-                                  <div className="text-xs text-gray-500 dark:text-gray-400">ID: {consultation.userId || 'N/A'}</div>
+                                  <div className="font-medium text-black dark:text-gray-100 text-xs sm:text-sm">{consultation.userName || 'Usuário'}</div>
+                                  <div className="text-xs text-gray-600 dark:text-gray-400">ID: {consultation.userId || 'N/A'}</div>
                                 </div>
                               </div>
                             </td>
@@ -452,7 +452,7 @@ const Dashboard: React.FC = () => {
                                   style={{ width: `${consultation.progress || 0}%` }}
                                 ></div>
                               </div>
-                              <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">{consultation.progress || 0}%</span>
+                              <span className="text-xs text-black dark:text-gray-300 font-medium">{consultation.progress || 0}%</span>
                             </div>
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
