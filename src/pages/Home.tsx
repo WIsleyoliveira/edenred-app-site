@@ -168,79 +168,81 @@ const Inicio: React.FC = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <>
-              <motion.div 
-                variants={itemVariants} 
-                className="cartao-edenred text-center group"
-                key={stats.empresasCadastradas}
-                animate={{ scale: [1, 1.02, 1] }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Building2 className="h-10 w-10 text-red-600 dark:text-red-400" />
-                </div>
-                <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                  <motion.span
-                    key={stats.empresasCadastradas}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {loading ? '...' : stats.empresasCadastradas.toLocaleString('pt-BR')}
-                  </motion.span>
-                </h3>
-                <p className="texto-eleganter font-semibold dark:text-gray-300">Empresas Cadastradas</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Base de dados brasileira</p>
-              </motion.div>
+            {!loading && (
+              <>
+                <motion.div 
+                  variants={itemVariants} 
+                  className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 dark:border-gray-700"
+                  key={stats.empresasCadastradas}
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <Building2 className="h-10 w-10 text-red-600 dark:text-red-400" />
+                  </div>
+                  <h3 className="text-5xl font-bold mb-3" style={{ color: '#000' }}>
+                    <motion.span
+                      key={stats.empresasCadastradas}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {stats.empresasCadastradas.toLocaleString('pt-BR')}
+                    </motion.span>
+                  </h3>
+                  <p className="text-lg font-bold mb-2" style={{ color: '#000' }}>Empresas Cadastradas</p>
+                  <p className="text-sm font-medium" style={{ color: '#6B7280' }}>Base de dados brasileira</p>
+                </motion.div>
 
-              <motion.div 
-                variants={itemVariants} 
-                className="cartao-edenred text-center group"
-                key={stats.consultasRealizadas}
-                animate={{ scale: [1, 1.02, 1] }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Search className="h-10 w-10 text-green-600 dark:text-green-400" />
-                </div>
-                <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                  <motion.span
-                    key={stats.consultasRealizadas}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {loading ? '...' : stats.consultasRealizadas.toLocaleString('pt-BR')}
-                  </motion.span>
-                </h3>
-                <p className="texto-eleganter font-semibold dark:text-gray-300">Consultas Realizadas</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Pesquisas efetuadas</p>
-              </motion.div>
+                <motion.div 
+                  variants={itemVariants} 
+                  className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 dark:border-gray-700"
+                  key={stats.consultasRealizadas}
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <Search className="h-10 w-10 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h3 className="text-5xl font-bold mb-3" style={{ color: '#000' }}>
+                    <motion.span
+                      key={stats.consultasRealizadas}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {stats.consultasRealizadas.toLocaleString('pt-BR')}
+                    </motion.span>
+                  </h3>
+                  <p className="text-lg font-bold mb-2" style={{ color: '#000' }}>Consultas Realizadas</p>
+                  <p className="text-sm font-medium" style={{ color: '#6B7280' }}>Pesquisas efetuadas</p>
+                </motion.div>
 
-              <motion.div 
-                variants={itemVariants} 
-                className="cartao-edenred text-center group"
-                key={stats.processosAtivos}
-                animate={{ scale: [1, 1.02, 1] }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <TrendingUp className="h-10 w-10 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                  <motion.span
-                    key={stats.processosAtivos}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {loading ? '...' : stats.processosAtivos.toLocaleString('pt-BR')}
-                  </motion.span>
-                </h3>
-                <p className="texto-eleganter font-semibold dark:text-gray-300">Processos Ativos</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Em andamento</p>
-              </motion.div>
-            </>
+                <motion.div 
+                  variants={itemVariants} 
+                  className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 dark:border-gray-700"
+                  key={stats.processosAtivos}
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <TrendingUp className="h-10 w-10 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-5xl font-bold mb-3" style={{ color: '#000' }}>
+                    <motion.span
+                      key={stats.processosAtivos}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {stats.processosAtivos.toLocaleString('pt-BR')}
+                    </motion.span>
+                  </h3>
+                  <p className="text-lg font-bold mb-2" style={{ color: '#000' }}>Processos Ativos</p>
+                  <p className="text-sm font-medium" style={{ color: '#6B7280' }}>Em andamento</p>
+                </motion.div>
+              </>
+            )}
           </div>
         </div>
       </motion.section>
