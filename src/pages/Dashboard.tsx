@@ -398,7 +398,7 @@ const Dashboard: React.FC = () => {
             <div className="overflow-x-auto -mx-4 sm:mx-0">
               <div className="inline-block min-w-full align-middle">
                 <div className="overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white">
                       <tr>
                         <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">DATA</th>
@@ -413,16 +413,16 @@ const Dashboard: React.FC = () => {
                         <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold whitespace-nowrap">AÇÕES</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white">
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                       {filteredConsultations.map((consultation, index) => (
                         <tr key={consultation._id} className="hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap text-gray-900 dark:text-gray-100">
                             {new Date(consultation.createdAt).toLocaleDateString('pt-BR')}
                           </td>
-                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-bold text-red-600 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 whitespace-nowrap">
                             {consultation._id || `${String(index + 1).padStart(3, '0')}`}
                           </td>
-                          <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs whitespace-nowrap text-gray-900 dark:text-gray-100">
                             {consultation.cnpj}
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
@@ -435,8 +435,8 @@ const Dashboard: React.FC = () => {
                                   {consultation.userName ? consultation.userName.charAt(0).toUpperCase() : 'U'}
                                 </div>
                                 <div className="hidden lg:block">
-                                  <div className="font-medium text-gray-900 text-xs sm:text-sm">{consultation.userName || 'Usuário'}</div>
-                                  <div className="text-xs text-gray-500">ID: {consultation.userId || 'N/A'}</div>
+                                  <div className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{consultation.userName || 'Usuário'}</div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400">ID: {consultation.userId || 'N/A'}</div>
                                 </div>
                               </div>
                             </td>
@@ -452,18 +452,18 @@ const Dashboard: React.FC = () => {
                                   style={{ width: `${consultation.progress || 0}%` }}
                                 ></div>
                               </div>
-                              <span className="text-xs text-gray-600 font-medium">{consultation.progress || 0}%</span>
+                              <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">{consultation.progress || 0}%</span>
                             </div>
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                             <div className="flex space-x-1 sm:space-x-2">
-                              <button className="text-blue-600 hover:text-blue-800 transition-colors p-1">
+                              <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors p-1">
                                 <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />
                               </button>
-                              <button className="text-green-600 hover:text-green-800 transition-colors p-1">
+                              <button className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 transition-colors p-1">
                                 <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
                               </button>
-                              <button className="text-red-600 hover:text-red-800 transition-colors p-1">
+                              <button className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors p-1">
                                 <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
                               </button>
                             </div>
