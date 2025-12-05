@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Build artifacts
+dist/
+backend/dist/
+build/
+.next/
+out/
+
+# Logs
+*.log
+**/*.log
+frontend.log
+backend.log
+
+# Database dumps and backups
+*.sql
+backups/
+backup-local.sql
+railway-import.sql
+railway-import-full.sql
+
+# Uploads
+uploads/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Git
+.git/
+.gitignore
+
+# Misc
+README*.md
+*.md
+!package.json
+!package-lock.json
