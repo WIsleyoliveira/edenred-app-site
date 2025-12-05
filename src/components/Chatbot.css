@@ -323,15 +323,13 @@
 /* Mobile Pequeno (< 375px) - iPhone SE, etc */
 @media (max-width: 374px) {
   .chatbot-window {
-    width: 100vw;
-    height: 100dvh;
-    max-height: -webkit-fill-available;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    top: 0;
-    border-radius: 0;
-    margin: 0;
+    width: calc(100vw - 20px);
+    height: calc(100vh - 140px);
+    max-height: 500px;
+    bottom: 70px;
+    right: 10px;
+    left: 10px;
+    border-radius: 16px;
   }
   
   .chatbot-button {
@@ -347,8 +345,7 @@
   }
 
   .chatbot-header {
-    border-radius: 0;
-    padding: max(16px, env(safe-area-inset-top)) 12px 12px 12px;
+    padding: 14px 12px;
   }
 
   .chatbot-avatar {
@@ -402,15 +399,13 @@
 /* Mobile Padrão (375px - 640px) - iPhone 12/13/14, etc */
 @media (min-width: 375px) and (max-width: 640px) {
   .chatbot-window {
-    width: 100vw;
-    height: 100dvh;
-    max-height: -webkit-fill-available;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    top: 0;
-    border-radius: 0;
-    margin: 0;
+    width: calc(100vw - 32px);
+    height: calc(100vh - 160px);
+    max-height: 600px;
+    bottom: 80px;
+    right: 16px;
+    left: 16px;
+    border-radius: 20px;
   }
   
   .chatbot-button {
@@ -426,8 +421,7 @@
   }
 
   .chatbot-header {
-    border-radius: 0;
-    padding: max(20px, env(safe-area-inset-top)) 16px 16px 16px;
+    padding: 18px 16px;
   }
 
   .chatbot-messages {
