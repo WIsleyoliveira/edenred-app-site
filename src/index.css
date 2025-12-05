@@ -67,19 +67,19 @@ body.dark {
 }
 
 .dashboard-section {
-  background-color: white !important;
+  background-color: #f9fafb !important; /* bg-gray-50 */
 }
 
 .dark .dashboard-section {
-  background-color: #2f3041 !important;
+  background-color: #111827 !important; /* bg-gray-900 */
 }
 
 .companies-section {
-  background-color: white !important;
+  background-color: #f9fafb !important; /* bg-gray-50 */
 }
 
 .dark .companies-section {
-  background-color: #2f3041 !important;
+  background-color: #111827 !important; /* bg-gray-900 */
 }
 
 * {
