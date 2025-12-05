@@ -154,6 +154,11 @@ body {
   color: #000000 !important;
 }
 
+/* Classe para textos da tabela que usam a cor Edenred */
+.table-text-edenred {
+  color: var(--edenred-noir) !important;
+}
+
 /* Garantir que nenhuma classe cinza oculte textos no modo claro */
 .table-edenred .text-gray-400,
 .table-edenred .text-gray-500,
