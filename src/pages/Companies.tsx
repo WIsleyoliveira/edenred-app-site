@@ -467,7 +467,7 @@ const Companies: React.FC = () => {
                             <div>
                               <div className="font-mono text-xs sm:text-sm font-semibold text-black dark:text-gray-100">{company.cnpj}</div>
                               {company.nomeFantasia && (
-                                <div className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-[120px] sm:max-w-xs">{company.nomeFantasia}</div>
+                                <div className="text-xs text-black dark:text-gray-400 truncate max-w-[120px] sm:max-w-xs">{company.nomeFantasia}</div>
                               )}
                             </div>
                           </td>
@@ -476,7 +476,7 @@ const Companies: React.FC = () => {
                               {company.razaoSocial}
                             </div>
                             {company.atividades && company.atividades.length > 0 && (
-                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate max-w-[150px] sm:max-w-xs">{company.atividades[0].descricao}</div>
+                              <div className="text-xs text-black dark:text-gray-400 mt-1 truncate max-w-[150px] sm:max-w-xs">{company.atividades[0].descricao}</div>
                             )}
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
@@ -495,7 +495,7 @@ const Companies: React.FC = () => {
                                   <div className="font-medium text-black dark:text-gray-100 text-xs sm:text-sm">
                                     Usuário
                                   </div>
-                                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                                  <div className="text-xs text-black dark:text-gray-400">
                                     ID: {company.userId || 'Desconhecido'}
                                   </div>
                                 </div>
@@ -525,7 +525,7 @@ const Companies: React.FC = () => {
                                   <MapPin size={12} className="mr-1 text-gray-500 dark:text-gray-500 hidden sm:block" />
                                   <span className="font-medium text-black dark:text-gray-100">{company.endereco.cidade}/{company.endereco.uf}</span>
                                 </div>
-                                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 hidden sm:block">
+                                <div className="text-xs text-black dark:text-gray-400 mt-1 hidden sm:block">
                                   CEP: {company.endereco.cep}
                                 </div>
                               </div>
