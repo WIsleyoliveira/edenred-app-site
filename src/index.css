@@ -133,6 +133,49 @@ body {
 
 }
 
+.table{
+  background-color: var(--edenred-midwhite)!important;
+}
+
+/* Tabela com estilos sólidos para claro/escuro */
+.table-edenred {
+  /* base: modo claro */
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+
+.table-edenred tbody {
+  background-color: #ffffff !important;
+}
+
+.table-edenred td,
+.table-edenred th {
+  color: #000000 !important;
+}
+
+.table-edenred tr:hover {
+  background-color: #fff5f5 !important; /* red-50 aproximado */
+}
+
+.dark .table-edenred {
+  background-color: #1f2937 !important; /* gray-800 */
+  color: #e5e7eb !important; /* gray-200/100 */
+}
+
+.dark .table-edenred tbody {
+  background-color: #1f2937 !important;
+}
+
+.dark .table-edenred td,
+.dark .table-edenred th {
+  color: #e5e7eb !important;
+}
+
+.dark .table-edenred tr:hover {
+  background-color: rgba(185, 28, 28, 0.12) !important; /* red-900/20 */
+}
+
 
 
 .titulo-principalcnpj{
