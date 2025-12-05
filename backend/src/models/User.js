@@ -52,6 +52,18 @@ const UserModel = (sequelize) => {
       type: DataTypes.STRING(500), // URL da imagem
       allowNull: true // Opcional
     },
+    // Telefone do usuário (compartilhado com projeto Prisma)
+    phone: {
+      type: DataTypes.STRING(20), // Máximo 20 caracteres
+      allowNull: true, // Opcional
+      validate: {
+        is: {
+          args: /^[\d\s\(\)\-\+]+$/, // Permite apenas dígitos, espaços, parênteses, hífen e +
+          msg: 'Formato de telefone inválido'
+        }
+      },
+      comment: 'Telefone do usuário - Campo compartilhado com outro projeto' // Documentação
+    },
     // Flag para soft delete (usuário ativo/inativo)
     isActive: {
       type: DataTypes.BOOLEAN, // Verdadeiro/falso
