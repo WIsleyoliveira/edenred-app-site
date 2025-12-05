@@ -507,13 +507,13 @@ const Companies: React.FC = () => {
                               {company.telefone && (
                                 <div className="flex items-center text-xs sm:text-sm text-black dark:text-gray-100">
                                   <Phone size={12} className="mr-1 text-gray-500 dark:text-gray-500 hidden sm:block" />
-                                  <span className="truncate max-w-[100px] sm:max-w-none">{company.telefone}</span>
+                                  <span className="text-black dark:text-gray-100 truncate max-w-[140px] sm:max-w-none">{company.telefone}</span>
                                 </div>
                               )}
                               {company.email && (
                                 <div className="flex items-center text-xs sm:text-sm text-black dark:text-gray-100">
                                   <Mail size={12} className="mr-1 text-gray-500 dark:text-gray-500 hidden sm:block" />
-                                  <span className="truncate max-w-[100px] sm:max-w-[150px]">{company.email}</span>
+                                  <span className="text-black dark:text-gray-100 truncate max-w-[180px] sm:max-w-none">{company.email}</span>
                                 </div>
                               )}
                             </div>
